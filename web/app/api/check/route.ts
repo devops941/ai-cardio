@@ -24,6 +24,7 @@ import { prisma } from "@/lib/prisma";
 import { rateLimit } from "@/lib/rate-limit";
 import { bandFromProbability, fuseRisk } from "@/lib/fusion";
 import { checkRedFlags } from "@/lib/red-flags";
+import { scoreSymptomRisk } from "@/lib/symptom-risk";
 
 const clinicalSchema = z.object({
   age: z.coerce.number().int().min(1).max(120),
@@ -174,9 +175,24 @@ export async function POST(request: NextRequest) {
     let llmRisk: RiskLevel | null = null;
     let aiFailed = false;
 
+    // Deterministic questionnaire baseline: always available, so a screening
+    // result exists even when the AI service, knowledge base or LLM cannot help.
+    const baselineRisk = scoreSymptomRisk({
+      symptoms,
+      severity: body.severity,
+      durationMin: durationMeta?.durationMin ?? null,
+      riskFactors: body.riskFactors,
+      age: body.age ?? null,
+      sudden: body.sudden,
+    }).riskLevel;
+
     if (symptomOutcome.status === "fulfilled") {
       symptomResponse = symptomOutcome.value;
-      llmRisk = toRisk(symptomResponse.risk_level);
+      const fromAi = toRisk(symptomResponse.risk_level);
+      // A deliberate non-heart refusal keeps a null band; every heart-related
+      // outcome falls back to the questionnaire baseline.
+      llmRisk =
+        fromAi ?? (symptomResponse.status === "non_heart" ? null : baselineRisk);
     } else {
       aiFailed = true;
     }
@@ -197,13 +213,13 @@ export async function POST(request: NextRequest) {
     }
 
     if (aiFailed || !symptomResponse) {
-      const { finalRisk, urgent } = fuseRisk(null, mlRisk, emergency);
+      const { finalRisk, urgent } = fuseRisk(baselineRisk, mlRisk, emergency);
       const fallbackResult = {
         status: "llm_unavailable" as const,
         emergency,
         fired_rules: fired,
         is_heart_related: true,
-        risk_level: null,
+        risk_level: baselineRisk,
         possible_conditions: [],
         explanation: LLM_FALLBACK_MESSAGE,
         recommended_specialist: emergency ? "Emergency" : null,
@@ -232,7 +248,7 @@ export async function POST(request: NextRequest) {
         durationMeta,
         emergency,
         fired,
-        llmRisk: null,
+        llmRisk: baselineRisk,
         mlRisk,
         mlProbability,
         modelVersion,
@@ -249,7 +265,7 @@ export async function POST(request: NextRequest) {
         emergency,
         firedRules: fired,
         finalRisk,
-        llmRisk: null,
+        llmRisk: baselineRisk,
         mlProbability,
         mlRisk,
         modelVersion,

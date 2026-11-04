@@ -159,10 +159,10 @@ export default async function ResultPage({ params }: { params: Promise<{ id: str
                       </span>
                       <div className="flex items-center gap-2 text-base font-bold text-[var(--ink-900)]">
                         <Heart className="h-4 w-4 animate-heartbeat text-[var(--cardiac-600)]" />
-                        <span>{record.llmRisk ?? risk ?? "Indeterminate"}</span>
+                        <span>{risk ?? record.llmRisk ?? "Indeterminate"}</span>
                       </div>
                       <p className="text-[11px] text-[var(--ink-500)]">
-                        Synthesized with RAG knowledge &amp; red-flag rules
+                        Highest of the symptom questionnaire, RAG knowledge &amp; red-flag rules
                       </p>
                     </div>
                   </div>

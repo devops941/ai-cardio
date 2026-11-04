@@ -12,10 +12,28 @@ from app.constants import (
     SYMPTOMS,
 )
 from app.schemas import SymptomRequest, SymptomResponse, Retrieved
-from app.services import guardrail, llm, llm_mock, vectorstore
+from app.services import guardrail, llm, llm_mock, symptom_risk, vectorstore
 from app.services.embedder import embed_one
 from app.services.llm import LLMFormatError, LLMUnavailable
 from app.services.red_flags import check_red_flags
+
+_BAND_ORDER = {"Low": 0, "Moderate": 1, "High": 2}
+
+
+def _baseline(req: SymptomRequest) -> dict:
+    """Deterministic symptom-only estimate used whenever the LLM cannot help."""
+    return symptom_risk.score_symptoms(
+        set(req.symptoms),
+        severity=req.severity,
+        duration_min=req.duration_min,
+        risk_factors=req.risk_factors,
+        age=req.age,
+        sudden=req.sudden,
+    )
+
+
+def _max_band(a: str, b: str) -> str:
+    return a if _BAND_ORDER.get(a, 0) >= _BAND_ORDER.get(b, 0) else b
 
 
 def _base(
@@ -108,9 +126,11 @@ def symptom_check(req: SymptomRequest) -> SymptomResponse:
     best = max((h["score"] for h in hits), default=0.0)
 
     if not hits or best < settings.SIM_THRESHOLD:
+        baseline = _baseline(req)
         body = _base(req, fired, emergency, is_heart)
         body.update(
             status="insufficient_knowledge",
+            risk_level=baseline["risk_level"],
             explanation=INSUFFICIENT_KNOWLEDGE_MESSAGE,
             message=INSUFFICIENT_KNOWLEDGE_MESSAGE,
             retrieved=retrieved,
@@ -133,9 +153,11 @@ def symptom_check(req: SymptomRequest) -> SymptomResponse:
         else:
             result = llm.generate_explanation(user_block, context_block)
     except (LLMUnavailable, LLMFormatError):
+        baseline = _baseline(req)
         body = _base(req, fired, emergency, is_heart)
         body.update(
             status="llm_unavailable",
+            risk_level=baseline["risk_level"],
             explanation=LLM_FALLBACK_MESSAGE,
             message=LLM_FALLBACK_MESSAGE,
             retrieved=retrieved,
@@ -148,12 +170,16 @@ def symptom_check(req: SymptomRequest) -> SymptomResponse:
     if emergency:
         specialist = "Emergency"
 
+    # Keep the conservative stance: never report lower than the deterministic
+    # questionnaire baseline when the model reads a case as milder.
+    risk_level = _max_band(result.risk_level, _baseline(req)["risk_level"])
+
     return SymptomResponse(
         status="ok",
         emergency=emergency,
         fired_rules=fired,
         is_heart_related=True,
-        risk_level=result.risk_level,
+        risk_level=risk_level,
         possible_conditions=result.possible_conditions,
         explanation=result.explanation,
         recommended_specialist=specialist,
