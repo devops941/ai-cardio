@@ -141,8 +141,8 @@
       "importance": 0.0195
     }
   ],
-  "file_path": "models/rf_v2.joblib",
+  "file_path": "models\\rf_v2.joblib",
   "train_rows": 242,
   "test_rows": 61,
-  "trained_at": "2026-11-04T07:08:14.721179+00:00"
+  "trained_at": "2026-11-04T09:42:17.141539+00:00"
 }

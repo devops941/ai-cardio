@@ -66,8 +66,8 @@ const HOSPITALS = [
 ];
 
 async function main() {
-  const email = (process.env.SEED_ADMIN_EMAIL ?? "admin@healthassistant.ai").toLowerCase();
-  const password = process.env.SEED_ADMIN_PASSWORD ?? "Admin@12345";
+  const email = (process.env.ADMIN_EMAIL ?? process.env.SEED_ADMIN_EMAIL ?? "admin@healthassistant.ai").toLowerCase();
+  const password = process.env.ADMIN_PASSWORD ?? process.env.SEED_ADMIN_PASSWORD ?? "Admin@12345";
   const name = process.env.SEED_ADMIN_NAME ?? "CardioCare Admin";
 
   const passwordHash = await bcrypt.hash(password, 11);

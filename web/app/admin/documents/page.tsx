@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { FileUp, FileText, Trash2, UploadCloud } from "lucide-react";
 
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -81,9 +82,15 @@ export default function AdminDocumentsPage() {
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("admin.upload")}</CardTitle>
+      <Card className="border-rose-100 shadow-xs">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-base text-slate-900">
+            <FileUp className="h-4 w-4 text-rose-600" />
+            {t("admin.upload")}
+          </CardTitle>
+          <p className="text-xs text-slate-500">
+            Upload clinical cardiology guidelines (ACC/AHA, ESC) to expand the RAG semantic knowledgebase
+          </p>
         </CardHeader>
         <CardContent>
           <div
@@ -98,15 +105,18 @@ export default function AdminDocumentsPage() {
               const file = e.dataTransfer.files[0];
               if (file) void upload(file);
             }}
-            className={`flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 text-center ${
-              dragging ? "border-blue-500 bg-blue-50" : "border-slate-300"
+            className={`flex flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center transition-all duration-200 ${
+              dragging ? "border-rose-500 bg-rose-50/60" : "border-slate-200 bg-slate-50/40 hover:border-rose-300"
             }`}
           >
-            <p className="text-sm text-slate-700">
-              Drag and drop a file here, or choose one.
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white shadow-xs text-rose-600 mb-2">
+              <UploadCloud className="h-6 w-6" />
+            </div>
+            <p className="text-xs font-semibold text-slate-800">
+              Drag and drop clinical reference document, or browse files
             </p>
-            <p className="mt-1 text-xs text-slate-500">
-              pdf docx doc xlsx xls csv txt md · up to 20 MB
+            <p className="mt-1 text-[11px] text-slate-400">
+              Supported formats: PDF, DOCX, DOC, XLSX, XLS, CSV, TXT, MD · Maximum size 20 MB
             </p>
             <input
               ref={inputRef}
@@ -118,54 +128,70 @@ export default function AdminDocumentsPage() {
                 if (file) void upload(file);
               }}
             />
-            <Button className="mt-3" onClick={() => inputRef.current?.click()} disabled={uploading}>
-              {uploading ? "Uploading…" : t("admin.upload")}
+            <Button
+              className="mt-4 gap-2 rounded-xl"
+              size="sm"
+              onClick={() => inputRef.current?.click()}
+              disabled={uploading}
+            >
+              <UploadCloud className="h-4 w-4" />
+              {uploading ? "Ingesting & Chunking..." : t("admin.upload")}
             </Button>
           </div>
           {error ? <Alert tone="error" className="mt-3">{error}</Alert> : null}
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("admin.documents")}</CardTitle>
+      <Card className="border-rose-100 shadow-xs">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-base text-slate-900">
+            <FileText className="h-4 w-4 text-rose-600" />
+            {t("admin.documents")}
+          </CardTitle>
+          <p className="text-xs text-slate-500">Indexed clinical publications and guideline corpora</p>
         </CardHeader>
         <CardContent>
           {rows === null ? (
-            <Skeleton className="h-40 w-full" />
+            <Skeleton className="h-40 w-full rounded-2xl" />
           ) : rows.length === 0 ? (
-            <p className="text-sm text-slate-600">{t("admin.noData")}</p>
+            <p className="text-xs text-slate-500 text-center py-6">{t("admin.noData")}</p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead className="bg-slate-50 text-slate-600">
+            <div className="overflow-x-auto rounded-xl border border-slate-100">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50/80 font-semibold text-slate-700 border-b border-slate-100">
                   <tr>
-                    <th scope="col" className="px-3 py-2">{t("fields.title")}</th>
-                    <th scope="col" className="px-3 py-2">{t("fields.type")}</th>
-                    <th scope="col" className="px-3 py-2">{t("fields.size")}</th>
-                    <th scope="col" className="px-3 py-2">{t("fields.status")}</th>
-                    <th scope="col" className="px-3 py-2">{t("fields.chunks")}</th>
-                    <th scope="col" className="px-3 py-2">{t("fields.date")}</th>
-                    <th scope="col" className="px-3 py-2">{t("fields.actions")}</th>
+                    <th scope="col" className="px-4 py-3">{t("fields.title")}</th>
+                    <th scope="col" className="px-4 py-3">{t("fields.type")}</th>
+                    <th scope="col" className="px-4 py-3">{t("fields.size")}</th>
+                    <th scope="col" className="px-4 py-3">{t("fields.status")}</th>
+                    <th scope="col" className="px-4 py-3">{t("fields.chunks")}</th>
+                    <th scope="col" className="px-4 py-3">{t("fields.date")}</th>
+                    <th scope="col" className="px-4 py-3 text-right">{t("fields.actions")}</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-slate-100 text-slate-700">
                   {rows.map((row) => (
-                    <tr key={row.id} className="border-t border-slate-100">
-                      <td className="px-3 py-2">{row.fileName}</td>
-                      <td className="px-3 py-2">{row.fileType}</td>
-                      <td className="px-3 py-2">{Math.round(row.sizeBytes / 1024)} KB</td>
-                      <td className="px-3 py-2">
+                    <tr key={row.id} className="hover:bg-slate-50/40">
+                      <td className="px-4 py-3 font-medium text-slate-900">{row.fileName}</td>
+                      <td className="px-4 py-3 font-mono text-[11px] uppercase">{row.fileType}</td>
+                      <td className="px-4 py-3">{Math.round(row.sizeBytes / 1024)} KB</td>
+                      <td className="px-4 py-3">
                         <Badge tone={STATUS_TONE[row.status] ?? "slate"}>{row.status}</Badge>
                         {row.status === "FAILED" && row.errorMessage ? (
-                          <p className="mt-1 text-xs text-red-700">{row.errorMessage}</p>
+                          <p className="mt-1 text-[11px] text-rose-700">{row.errorMessage}</p>
                         ) : null}
                       </td>
-                      <td className="px-3 py-2">{row.chunkCount}</td>
-                      <td className="px-3 py-2">{new Date(row.createdAt).toLocaleDateString()}</td>
-                      <td className="px-3 py-2">
-                        <Button variant="danger" size="sm" onClick={() => remove(row.id)}>
-                          {t("admin.delete")}
+                      <td className="px-4 py-3">{row.chunkCount}</td>
+                      <td className="px-4 py-3">{new Date(row.createdAt).toLocaleDateString()}</td>
+                      <td className="px-4 py-3 text-right">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => remove(row.id)}
+                          className="h-8 w-8 p-0 rounded-xl text-slate-400 hover:bg-rose-50 hover:text-rose-600"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                          <span className="sr-only">{t("admin.delete")}</span>
                         </Button>
                       </td>
                     </tr>

@@ -1,0 +1,148 @@
+{
+  "version": 3,
+  "algorithm": "RandomForestClassifier",
+  "best_params": {
+    "max_depth": null,
+    "min_samples_split": 5,
+    "n_estimators": 300
+  },
+  "metrics": {
+    "accuracy": 0.8852,
+    "precision": 0.8182,
+    "recall": 0.9643,
+    "f1": 0.8852,
+    "roc_auc": 0.947
+  },
+  "comparison": [
+    {
+      "algorithm": "Logistic Regression",
+      "accuracy": 0.8525,
+      "precision": 0.8065,
+      "recall": 0.8929,
+      "f1": 0.8475,
+      "roc_auc": 0.9545,
+      "cv_recall_mean": 0.8016
+    },
+    {
+      "algorithm": "KNN",
+      "accuracy": 0.8852,
+      "precision": 0.8387,
+      "recall": 0.9286,
+      "f1": 0.8814,
+      "roc_auc": 0.9443,
+      "cv_recall_mean": 0.8277
+    },
+    {
+      "algorithm": "SVM",
+      "accuracy": 0.918,
+      "precision": 0.8966,
+      "recall": 0.9286,
+      "f1": 0.9123,
+      "roc_auc": 0.96,
+      "cv_recall_mean": 0.7834
+    },
+    {
+      "algorithm": "Decision Tree",
+      "accuracy": 0.8689,
+      "precision": 0.8571,
+      "recall": 0.8571,
+      "f1": 0.8571,
+      "roc_auc": 0.8712,
+      "cv_recall_mean": 0.7289
+    },
+    {
+      "algorithm": "Random Forest",
+      "accuracy": 0.8852,
+      "precision": 0.8182,
+      "recall": 0.9643,
+      "f1": 0.8852,
+      "roc_auc": 0.947,
+      "cv_recall_mean": 0.783
+    },
+    {
+      "algorithm": "XGBoost",
+      "accuracy": 0.8852,
+      "precision": 0.8621,
+      "recall": 0.8929,
+      "f1": 0.8772,
+      "roc_auc": 0.9426,
+      "cv_recall_mean": 0.7834
+    }
+  ],
+  "confusion_matrix": [
+    [
+      27,
+      6
+    ],
+    [
+      1,
+      27
+    ]
+  ],
+  "feature_importances": [
+    {
+      "feature": "cat__thal_3.0",
+      "importance": 0.116
+    },
+    {
+      "feature": "num__ca",
+      "importance": 0.104
+    },
+    {
+      "feature": "cat__cp_4.0",
+      "importance": 0.0946
+    },
+    {
+      "feature": "num__thalach",
+      "importance": 0.0944
+    },
+    {
+      "feature": "cat__thal_7.0",
+      "importance": 0.0856
+    },
+    {
+      "feature": "num__oldpeak",
+      "importance": 0.0833
+    },
+    {
+      "feature": "num__age",
+      "importance": 0.0702
+    },
+    {
+      "feature": "num__chol",
+      "importance": 0.0654
+    },
+    {
+      "feature": "num__trestbps",
+      "importance": 0.058
+    },
+    {
+      "feature": "bin__exang",
+      "importance": 0.0457
+    },
+    {
+      "feature": "bin__sex",
+      "importance": 0.0335
+    },
+    {
+      "feature": "cat__slope_1.0",
+      "importance": 0.0332
+    },
+    {
+      "feature": "cat__slope_2.0",
+      "importance": 0.0237
+    },
+    {
+      "feature": "cat__cp_3.0",
+      "importance": 0.0197
+    },
+    {
+      "feature": "cat__cp_1.0",
+      "importance": 0.0195
+    }
+  ],
+  "file_path": "models\\rf_v3.joblib",
+  "train_rows": 242,
+  "test_rows": 61,
+  "trained_at": "2026-11-04T10:53:27.311828+00:00"
+}

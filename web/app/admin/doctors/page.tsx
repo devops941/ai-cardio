@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { Edit, Plus, Search, Stethoscope, Trash2 } from "lucide-react";
 
 import { BulkImportCard } from "@/components/admin/bulk-import-card";
 import { Alert } from "@/components/ui/alert";
@@ -108,36 +109,54 @@ export default function AdminDoctorsPage() {
     <div className="space-y-6">
       {error ? <Alert tone="error">{error}</Alert> : null}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("admin.doctors")}</CardTitle>
+      <Card className="border-rose-100 shadow-xs">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-base text-slate-900">
+            <Stethoscope className="h-4 w-4 text-rose-600" />
+            {t("admin.doctors")}
+          </CardTitle>
+          <p className="text-xs text-slate-500">
+            Manage practicing cardiologists, electrophysiologists, and cardiac surgeons
+          </p>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex flex-wrap items-end gap-3">
-            <div className="space-y-1">
-              <Label htmlFor="q">{t("admin.search")}</Label>
-              <Input id="q" value={query} onChange={(e) => setQuery(e.target.value)} />
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div className="relative w-full max-w-sm">
+              <Input
+                id="q"
+                placeholder="Search by doctor name or specialization..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="pl-9"
+              />
+              <Search className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-slate-400" />
             </div>
-            <Button onClick={() => setDraft({ ...EMPTY })}>{t("admin.add")}</Button>
+            <Button onClick={() => setDraft({ ...EMPTY })} size="sm" className="gap-1.5 rounded-xl">
+              <Plus className="h-4 w-4" />
+              {t("admin.add")}
+            </Button>
           </div>
 
           {draft ? (
-            <div className="space-y-3 rounded-lg border border-slate-200 p-4">
+            <div className="space-y-4 rounded-2xl border border-rose-200/80 bg-rose-50/20 p-5">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-rose-800">
+                {draft.id ? "Edit Cardiologist" : "Add New Cardiologist"}
+              </h4>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-1">
-                  <Label htmlFor="d-name">{t("fields.name")}</Label>
+                  <Label htmlFor="d-name" className="text-xs">{t("fields.name")}</Label>
                   <Input id="d-name" value={draft.name ?? ""} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
                 </div>
                 <div className="space-y-1">
-                  <Label htmlFor="d-spec">{t("fields.specialization")}</Label>
-                  <Input id="d-spec" value={draft.specialization ?? ""} onChange={(e) => setDraft({ ...draft, specialization: e.target.value })} />
+                  <Label htmlFor="d-spec" className="text-xs">{t("fields.specialization")}</Label>
+                  <Input id="d-spec" placeholder="e.g. Interventional Cardiology" value={draft.specialization ?? ""} onChange={(e) => setDraft({ ...draft, specialization: e.target.value })} />
                 </div>
                 <div className="space-y-1">
-                  <Label htmlFor="d-qual">{t("fields.qualification")}</Label>
-                  <Input id="d-qual" value={draft.qualification ?? ""} onChange={(e) => setDraft({ ...draft, qualification: e.target.value })} />
+                  <Label htmlFor="d-qual" className="text-xs">{t("fields.qualification")}</Label>
+                  <Input id="d-qual" placeholder="e.g. MD, DM (Cardiology)" value={draft.qualification ?? ""} onChange={(e) => setDraft({ ...draft, qualification: e.target.value })} />
                 </div>
                 <div className="space-y-1">
-                  <Label htmlFor="d-exp">{t("fields.experienceYears")}</Label>
+                  <Label htmlFor="d-exp" className="text-xs">{t("fields.experienceYears")}</Label>
                   <Input
                     id="d-exp"
                     type="number"
@@ -146,19 +165,19 @@ export default function AdminDoctorsPage() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label htmlFor="d-phone">{t("fields.phone")}</Label>
+                  <Label htmlFor="d-phone" className="text-xs">{t("fields.phone")}</Label>
                   <Input id="d-phone" value={draft.phone ?? ""} onChange={(e) => setDraft({ ...draft, phone: e.target.value })} />
                 </div>
                 <div className="space-y-1">
-                  <Label htmlFor="d-email">{t("fields.email")}</Label>
+                  <Label htmlFor="d-email" className="text-xs">{t("fields.email")}</Label>
                   <Input id="d-email" type="email" value={draft.email ?? ""} onChange={(e) => setDraft({ ...draft, email: e.target.value })} />
                 </div>
                 <div className="space-y-1">
-                  <Label htmlFor="d-days">{t("fields.availableDays")}</Label>
-                  <Input id="d-days" value={draft.availableDays ?? ""} onChange={(e) => setDraft({ ...draft, availableDays: e.target.value })} />
+                  <Label htmlFor="d-days" className="text-xs">{t("fields.availableDays")}</Label>
+                  <Input id="d-days" placeholder="e.g. Mon-Fri" value={draft.availableDays ?? ""} onChange={(e) => setDraft({ ...draft, availableDays: e.target.value })} />
                 </div>
                 <div className="space-y-1">
-                  <Label htmlFor="d-fee">{t("fields.consultationFee")}</Label>
+                  <Label htmlFor="d-fee" className="text-xs">{t("fields.consultationFee")}</Label>
                   <Input
                     id="d-fee"
                     type="number"
@@ -166,14 +185,14 @@ export default function AdminDoctorsPage() {
                     onChange={(e) => setDraft({ ...draft, consultationFee: e.target.value ? Number(e.target.value) : null })}
                   />
                 </div>
-                <div className="space-y-1">
-                  <Label htmlFor="d-hospital">{t("fields.hospital")}</Label>
+                <div className="space-y-1 sm:col-span-2">
+                  <Label htmlFor="d-hospital" className="text-xs">{t("fields.hospital")}</Label>
                   <Select
                     id="d-hospital"
                     value={draft.hospitalId ?? ""}
                     onChange={(e) => setDraft({ ...draft, hospitalId: e.target.value })}
                   >
-                    <option value="">—</option>
+                    <option value="">— Select Associated Hospital —</option>
                     {hospitals.map((hospital) => (
                       <option key={hospital.id} value={hospital.id}>
                         {hospital.name}
@@ -182,41 +201,46 @@ export default function AdminDoctorsPage() {
                   </Select>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Button onClick={save} disabled={saving}>{t("admin.save")}</Button>
-                <Button variant="ghost" onClick={() => setDraft(null)}>{t("admin.cancel")}</Button>
+              <div className="flex gap-2 pt-2 border-t border-rose-200/60">
+                <Button onClick={save} disabled={saving} size="sm" className="rounded-xl">
+                  {saving ? "Saving..." : t("admin.save")}
+                </Button>
+                <Button variant="ghost" onClick={() => setDraft(null)} size="sm" className="rounded-xl">
+                  {t("admin.cancel")}
+                </Button>
               </div>
             </div>
           ) : null}
 
           {rows === null ? (
-            <Skeleton className="h-40 w-full" />
+            <Skeleton className="h-40 w-full rounded-2xl" />
           ) : rows.length === 0 ? (
-            <p className="text-sm text-slate-600">{t("admin.noData")}</p>
+            <p className="text-xs text-slate-500 text-center py-6">{t("admin.noData")}</p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead className="bg-slate-50 text-slate-600">
+            <div className="overflow-x-auto rounded-xl border border-slate-100">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50/80 font-semibold text-slate-700 border-b border-slate-100">
                   <tr>
-                    <th scope="col" className="px-3 py-2">{t("fields.name")}</th>
-                    <th scope="col" className="px-3 py-2">{t("fields.specialization")}</th>
-                    <th scope="col" className="px-3 py-2">{t("fields.hospital")}</th>
-                    <th scope="col" className="px-3 py-2">{t("fields.actions")}</th>
+                    <th scope="col" className="px-4 py-3">{t("fields.name")}</th>
+                    <th scope="col" className="px-4 py-3">{t("fields.specialization")}</th>
+                    <th scope="col" className="px-4 py-3">{t("fields.hospital")}</th>
+                    <th scope="col" className="px-4 py-3 text-right">{t("fields.actions")}</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-slate-100 text-slate-700">
                   {rows.map((row) => (
-                    <tr key={row.id} className="border-t border-slate-100">
-                      <td className="px-3 py-2">{row.name}</td>
-                      <td className="px-3 py-2">{row.specialization ?? "—"}</td>
-                      <td className="px-3 py-2">{row.hospital?.name ?? "—"}</td>
-                      <td className="px-3 py-2">
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm" onClick={() => setDraft(row)}>
+                    <tr key={row.id} className="hover:bg-slate-50/40">
+                      <td className="px-4 py-3 font-semibold text-slate-900">{row.name}</td>
+                      <td className="px-4 py-3">{row.specialization ?? "—"}</td>
+                      <td className="px-4 py-3 text-rose-700 font-medium">{row.hospital?.name ?? "—"}</td>
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <Button variant="outline" size="sm" onClick={() => setDraft(row)} className="h-7 text-xs rounded-lg">
+                            <Edit className="h-3 w-3 mr-1" />
                             {t("admin.edit")}
                           </Button>
-                          <Button variant="danger" size="sm" onClick={() => remove(row.id)}>
-                            {t("admin.delete")}
+                          <Button variant="ghost" size="sm" onClick={() => remove(row.id)} className="h-7 w-7 p-0 rounded-lg text-slate-400 hover:text-rose-600">
+                            <Trash2 className="h-3.5 w-3.5" />
                           </Button>
                         </div>
                       </td>

@@ -26,6 +26,7 @@ from sklearn.model_selection import GridSearchCV, StratifiedKFold, train_test_sp
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.calibration import CalibratedClassifierCV
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from xgboost import XGBClassifier
@@ -102,8 +103,8 @@ def _algorithms() -> dict[str, tuple[object, dict, bool]]:
             True,
         ),
         "SVM": (
-            SVC(probability=True, random_state=42),
-            {"clf__C": [0.1, 1, 10], "clf__kernel": ["linear", "rbf"]},
+            CalibratedClassifierCV(estimator=SVC(random_state=42), ensemble=False),
+            {"clf__estimator__C": [0.1, 1, 10], "clf__estimator__kernel": ["linear", "rbf"]},
             True,
         ),
         "Decision Tree": (

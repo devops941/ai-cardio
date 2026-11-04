@@ -2,12 +2,12 @@ import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV !== "production";
 
-// CSP per Section 10.4: no CDN for Leaflet icons, 'unsafe-eval' only in dev.
+// CSP per Section 10.4: allow Leaflet OSM tiles and Unsplash medical imagery
 const csp = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://*.tile.openstreetmap.org",
+  "img-src 'self' data: blob: https://*.tile.openstreetmap.org https://images.unsplash.com",
   "font-src 'self' data:",
   "connect-src 'self' https://*.tile.openstreetmap.org",
   "frame-ancestors 'none'",
@@ -17,6 +17,14 @@ const csp = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+    ],
+  },
   async headers() {
     return [
       {
