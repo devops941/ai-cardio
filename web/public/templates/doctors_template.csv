@@ -1,0 +1,3 @@
+name,specialization,qualification,experienceYears,phone,email,hospitalName,availableDays,consultationFee
+Dr. Asha Raman (sample),Cardiologist,"MD, DM (Cardiology)",14,98400-00001,asha.raman@example.com,"Sample Heart Hospital, Anna Nagar","Mon,Wed,Fri",700
+Dr. Karthik Venkat (sample),Interventional Cardiologist,"MD, DM (Cardiology)",9,98400-00002,karthik.venkat@example.com,"Sample Cardiac Centre, Adyar","Tue,Thu,Sat",600

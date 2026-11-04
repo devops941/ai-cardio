@@ -1,0 +1,56 @@
+{
+  "red_flags": [
+    {"symptoms": ["chest_pain"], "duration_min": 20, "severity": 5, "sudden": false, "free_text": "", "expected": ["RF-01"]},
+    {"symptoms": ["chest_pain", "pain_spreading"], "duration_min": 10, "severity": 5, "sudden": false, "free_text": "", "expected": ["RF-02"]},
+    {"symptoms": ["chest_pain", "cold_sweat"], "duration_min": 10, "severity": 5, "sudden": false, "free_text": "", "expected": ["RF-03"]},
+    {"symptoms": ["chest_pain", "breathlessness"], "duration_min": 10, "severity": 5, "sudden": false, "free_text": "", "expected": ["RF-04"]},
+    {"symptoms": ["fainting"], "duration_min": null, "severity": 3, "sudden": false, "free_text": "", "expected": ["RF-05"]},
+    {"symptoms": ["breathlessness"], "duration_min": null, "severity": 8, "sudden": false, "free_text": "", "expected": ["RF-06"]},
+    {"symptoms": ["breathlessness"], "duration_min": null, "severity": 5, "sudden": true, "free_text": "", "expected": ["RF-06"]},
+    {"symptoms": ["breathlessness"], "duration_min": null, "severity": 5, "sudden": false, "free_text": "", "expected": []},
+    {"symptoms": ["nausea_chest", "cold_sweat"], "duration_min": null, "severity": 4, "sudden": false, "free_text": "", "expected": ["RF-07"]},
+    {"symptoms": ["palpitations"], "duration_min": null, "severity": 4, "sudden": false, "free_text": "Crushing pain", "expected": ["RF-08"]},
+    {"symptoms": ["palpitations", "dizziness"], "duration_min": 720, "severity": 4, "sudden": false, "free_text": "", "expected": []},
+    {"symptoms": ["chest_pain"], "duration_min": 15, "severity": 5, "sudden": false, "free_text": "", "expected": []},
+    {"symptoms": ["chest_pain", "breathlessness", "cold_sweat"], "duration_min": 30, "severity": 8, "sudden": false, "free_text": "", "expected": ["RF-01", "RF-03", "RF-04", "RF-06"]}
+  ],
+  "fusion": [
+    {"llm": "LOW", "ml": "LOW", "emergency": false, "expected": "LOW"},
+    {"llm": "LOW", "ml": "MODERATE", "emergency": false, "expected": "MODERATE"},
+    {"llm": "LOW", "ml": "HIGH", "emergency": false, "expected": "HIGH"},
+    {"llm": "LOW", "ml": null, "emergency": false, "expected": "LOW"},
+    {"llm": "MODERATE", "ml": "LOW", "emergency": false, "expected": "MODERATE"},
+    {"llm": "MODERATE", "ml": "MODERATE", "emergency": false, "expected": "MODERATE"},
+    {"llm": "MODERATE", "ml": "HIGH", "emergency": false, "expected": "HIGH"},
+    {"llm": "MODERATE", "ml": null, "emergency": false, "expected": "MODERATE"},
+    {"llm": "HIGH", "ml": "LOW", "emergency": false, "expected": "HIGH"},
+    {"llm": "HIGH", "ml": null, "emergency": false, "expected": "HIGH"},
+    {"llm": null, "ml": "LOW", "emergency": false, "expected": "LOW"},
+    {"llm": null, "ml": null, "emergency": false, "expected": null},
+    {"llm": "LOW", "ml": "LOW", "emergency": true, "expected": "HIGH"}
+  ],
+  "bands": [
+    {"probability": 0.39, "expected": "LOW"},
+    {"probability": 0.4, "expected": "MODERATE"},
+    {"probability": 0.7, "expected": "MODERATE"},
+    {"probability": 0.71, "expected": "HIGH"}
+  ],
+  "ranking": {
+    "radiusKm": 25,
+    "hospitals": [
+      {"id": "H1", "distanceKm": 4, "hasCardiology": true, "hasCathLab": true, "emergency24x7": true, "rating": 4.5, "cardiologistCount": 4},
+      {"id": "H2", "distanceKm": 2, "hasCardiology": true, "hasCathLab": false, "emergency24x7": false, "rating": 4.0, "cardiologistCount": 2},
+      {"id": "H3", "distanceKm": 10, "hasCardiology": true, "hasCathLab": true, "emergency24x7": true, "rating": 4.0, "cardiologistCount": 6}
+    ],
+    "expectedNormal": [
+      {"id": "H1", "score": 0.898},
+      {"id": "H3", "score": 0.8},
+      {"id": "H2", "score": 0.634}
+    ],
+    "expectedUrgent": [
+      {"id": "H1", "score": 0.929},
+      {"id": "H3", "score": 0.85},
+      {"id": "H2", "score": 0.507}
+    ]
+  }
+}

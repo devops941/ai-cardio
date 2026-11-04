@@ -1,0 +1,243 @@
+// CardioCare AI - Prisma schema (Section 6)
+// Prisma 6.x, MongoDB replica set required.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum DocumentStatus {
+  PENDING
+  PROCESSING
+  READY
+  FAILED
+}
+
+enum RiskLevel {
+  LOW
+  MODERATE
+  HIGH
+}
+
+model User {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         Role     @default(USER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  profile       Profile?
+  predictions   Prediction[]
+  prescriptions Prescription[]
+  auditLogs     AuditLog[]
+
+  @@index([role])
+}
+
+model Profile {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @unique @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  age        Int?
+  gender     String?
+  phone      String?
+  bloodGroup String?
+  heightCm   Float?
+  weightKg   Float?
+  city       String?
+  state      String?
+  pincode    String?
+  latitude   Float?
+  longitude  Float?
+  riskFactors String[] @default([])
+  updatedAt  DateTime @updatedAt
+
+  @@index([city])
+}
+
+model Prediction {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  symptoms      String[]
+  symptomLabels String[]
+  freeText      String?
+  age           Int?
+  gender        String?
+  riskFactors   String[]
+  durationLabel String?
+  durationMin   Int?
+  sudden        Boolean  @default(false)
+  severity      Int      @default(1)
+
+  emergency     Boolean  @default(false)
+  firedRules    String[] @default([])
+  llmRisk       String?
+  mlRisk        String?
+  mlProbability Float?
+  finalRisk     RiskLevel?
+  urgent        Boolean  @default(false)
+
+  explanation           String?
+  possibleConditions    Json?
+  recommendedSpecialist String?
+  nextSteps             String[]
+  lifestyleTips         String[]
+  sources               String[]
+  status                String
+  aiMessage             String?
+  retrieved             Json?
+
+  hospitalId String?   @db.ObjectId
+  hospital   Hospital? @relation(fields: [hospitalId], references: [id], onDelete: SetNull)
+
+  latitude  Float?
+  longitude Float?
+  city      String?
+  pincode   String?
+
+  modelVersion Int?
+  createdAt    DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([finalRisk])
+}
+
+model Prescription {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  doctorName   String
+  hospitalName String?
+  prescribedOn DateTime @default(now())
+  notes        String?
+  medicines    Json?
+  fileUrl      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([userId, prescribedOn])
+}
+
+model Hospital {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  name    String
+  address String?
+  city    String?
+  state   String?
+  pincode String?
+  phone   String?
+
+  latitude  Float?
+  longitude Float?
+  location  Json?
+
+  emergency24x7     Boolean @default(false)
+  hasCardiology     Boolean @default(false)
+  hasCathLab        Boolean @default(false)
+  rating            Float   @default(0)
+  beds              Int?
+  cardiologistCount Int     @default(0)
+
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  doctors     Doctor[]
+  predictions Prediction[]
+
+  @@index([city])
+  @@index([isActive])
+}
+
+model Doctor {
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+
+  specialization  String?
+  qualification   String?
+  experienceYears Int?
+  phone           String?
+  email           String?
+  availableDays   String?
+  consultationFee Float?
+  isActive        Boolean @default(true)
+
+  hospitalId String?   @db.ObjectId
+  hospital   Hospital? @relation(fields: [hospitalId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([hospitalId])
+  @@index([specialization])
+}
+
+model Document {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  fileName  String
+  fileType  String
+  sizeBytes Int
+  checksum  String @unique
+
+  status       DocumentStatus @default(PENDING)
+  chunkCount   Int            @default(0)
+  errorMessage String?
+
+  uploadedById String? @db.ObjectId
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  ingestedAt   DateTime?
+
+  @@index([status])
+}
+
+model MlModelVersion {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  version   Int    @unique
+  algorithm String
+
+  accuracy  Float?
+  precision Float?
+  recall    Float?
+  f1        Float?
+  rocAuc    Float?
+
+  filePath String?
+  metrics  Json?
+  isActive Boolean @default(false)
+
+  trainedAt DateTime @default(now())
+
+  @@index([isActive])
+}
+
+model AuditLog {
+  id     String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId String? @db.ObjectId
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  action    String
+  entity    String?
+  entityId  String?
+  metadata  Json?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([action])
+}
