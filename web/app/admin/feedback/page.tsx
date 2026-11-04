@@ -51,13 +51,13 @@ export default function AdminFeedbackPage() {
     <div className="space-y-6">
       {error ? <Alert tone="error">{error}</Alert> : null}
 
-      <Card className="border-rose-100 shadow-xs">
+      <Card className="border-[var(--cardiac-100)] shadow-xs">
         <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-base text-slate-900">
-            <MessageSquare className="h-4 w-4 text-rose-600" />
+          <CardTitle className="flex items-center gap-2 text-base text-[var(--ink-900)]">
+            <MessageSquare className="h-4 w-4 text-[var(--cardiac-600)]" />
             {t("admin.feedback")}
           </CardTitle>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-[var(--ink-500)]">
             Patient sentiment analysis, clinical usability feedback, and user reviews
           </p>
         </CardHeader>
@@ -87,11 +87,11 @@ export default function AdminFeedbackPage() {
           {rows === null ? (
             <Skeleton className="h-40 w-full rounded-2xl" />
           ) : rows.length === 0 ? (
-            <p className="text-xs text-slate-500 text-center py-6">{t("admin.noData")}</p>
+            <p className="text-xs text-[var(--ink-500)] text-center py-6">{t("admin.noData")}</p>
           ) : (
-            <div className="overflow-x-auto rounded-xl border border-slate-100">
+            <div className="overflow-x-auto rounded-xl border border-[var(--ink-100)]">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50/80 font-semibold text-slate-700 border-b border-slate-100">
+                <thead className="bg-[var(--ink-50)]/80 font-semibold text-[var(--ink-700)] border-b border-[var(--ink-100)]">
                   <tr>
                     <th scope="col" className="px-4 py-3">{t("fields.date")}</th>
                     <th scope="col" className="px-4 py-3">{t("fields.user")}</th>
@@ -99,22 +99,22 @@ export default function AdminFeedbackPage() {
                     <th scope="col" className="px-4 py-3">{t("fields.comment")}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700">
+                <tbody className="divide-y divide-[var(--ink-100)] text-[var(--ink-700)]">
                   {rows.map((row) => (
-                    <tr key={row.id} className="hover:bg-slate-50/40">
-                      <td className="px-4 py-3 text-slate-500">
+                    <tr key={row.id} className="hover:bg-[var(--ink-50)]/40">
+                      <td className="px-4 py-3 text-[var(--ink-500)]">
                         {new Date(row.createdAt).toLocaleDateString(undefined, {
                           year: "numeric",
                           month: "short",
                           day: "numeric",
                         })}
                       </td>
-                      <td className="px-4 py-3 font-mono text-[11px] text-slate-600">{row.user?.email ?? "—"}</td>
+                      <td className="px-4 py-3 font-mono text-[11px] text-[var(--ink-500)]">{row.user?.email ?? "—"}</td>
                       <td className="px-4 py-3 font-semibold text-amber-600">
                         {row.rating ? `★ ${row.rating}` : "—"}
                       </td>
-                      <td className="px-4 py-3 leading-relaxed text-slate-800">
-                        {row.comment ?? <em className="text-slate-400">No comment</em>}
+                      <td className="px-4 py-3 leading-relaxed text-[var(--ink-900)]">
+                        {row.comment ?? <em className="text-[var(--ink-300)]">No comment</em>}
                       </td>
                     </tr>
                   ))}

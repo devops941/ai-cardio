@@ -1,109 +1,151 @@
 import Link from "next/link";
-import { Activity, AlertCircle, Heart, Phone, ShieldCheck } from "lucide-react";
+import {
+  Activity,
+  AlertCircle,
+  ArrowUpRight,
+  Heart,
+  Mail,
+  MapPin,
+  Phone,
+  ShieldCheck,
+  Stethoscope,
+} from "lucide-react";
 
+import { EcgStrip } from "@/components/motion/ecg-line";
 import { t } from "@/lib/i18n";
+
+const PLATFORM_LINKS = [
+  { href: "/check", label: "Heart Symptom Checker" },
+  { href: "/hospitals", label: "Find Cardiac Hospitals" },
+  { href: "/dashboard", label: "Patient Dashboard" },
+  { href: "/history", label: "Assessment History" },
+  { href: "/feedback", label: "Send Feedback" },
+];
+
+const CLINICAL_LINKS = [
+  { label: "ACC / AHA Guidelines" },
+  { label: "ESC Cardiology Standards" },
+  { label: "Cleveland Heart Dataset" },
+  { label: "Deterministic Red-Flag Rules" },
+  { label: "RAG Knowledge Retrieval" },
+];
 
 export function SiteFooter() {
   return (
-    <footer className="mt-16 border-t border-rose-100 bg-gradient-to-b from-white to-rose-50/40">
-      <div className="mx-auto max-w-6xl px-4 py-12">
-        <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-4">
-          {/* Column 1: Brand & Mission */}
-          <div className="space-y-3 md:col-span-1">
-            <div className="flex items-center gap-2">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-600 text-white shadow-sm shadow-rose-600/30">
-                <Heart aria-hidden className="h-4 w-4 animate-heartbeat fill-white/20" />
+    <footer className="relative mt-20 overflow-hidden border-t border-[var(--cardiac-100)] bg-gradient-to-b from-white to-[var(--cardiac-50)]/60">
+      <EcgStrip className="opacity-40" />
+
+      <div className="mx-auto w-full max-w-[1600px] px-4 pb-10 sm:px-6 lg:px-10">
+        <div className="grid gap-10 pt-4 md:grid-cols-2 lg:grid-cols-12">
+          {/* Brand */}
+          <div className="space-y-4 lg:col-span-4">
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--cardiac-600)] to-[var(--cardiac-900)] shadow-lg shadow-[color:rgba(222,17,69,0.3)]">
+                <Heart aria-hidden className="h-5 w-5 animate-heartbeat fill-white/25 text-white" />
               </span>
-              <span className="text-base font-black tracking-tight text-slate-900">
-                Cardio<span className="text-rose-600">Care AI</span>
+              <span className="text-lg font-black tracking-tight text-[var(--ink-900)]">
+                Cardio<span className="text-[var(--cardiac-600)]">Care AI</span>
               </span>
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              An educational cardiovascular symptom screening assistant powered by validated clinical decision models and medical retrieval.
+            <p className="max-w-sm text-sm leading-relaxed text-[var(--ink-500)]">
+              An educational cardiovascular symptom-screening assistant combining validated
+              clinical decision models with grounded medical retrieval.
             </p>
-            <div className="flex items-center gap-2 pt-1 text-xs font-semibold text-emerald-700">
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3.5 py-1.5 text-xs font-semibold text-emerald-800">
               <ShieldCheck className="h-4 w-4 text-emerald-600" />
-              <span>Evidence-Grounded RAG Pipeline</span>
+              Evidence-Grounded RAG Pipeline
             </div>
           </div>
 
-          {/* Column 2: Quick Links */}
-          <div className="space-y-2">
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-900">
+          {/* Platform */}
+          <div className="space-y-3 lg:col-span-3">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--ink-900)]">
               Platform
             </p>
-            <ul className="space-y-1.5 text-xs text-slate-600">
-              <li>
-                <Link href="/check" className="hover:text-rose-600 transition-colors">
-                  Heart Symptom Checker
-                </Link>
-              </li>
-              <li>
-                <Link href="/hospitals" className="hover:text-rose-600 transition-colors">
-                  Find Cardiac Hospitals
-                </Link>
-              </li>
-              <li>
-                <Link href="/dashboard" className="hover:text-rose-600 transition-colors">
-                  Patient Dashboard
-                </Link>
-              </li>
-              <li>
-                <Link href="/feedback" className="hover:text-rose-600 transition-colors">
-                  Send Feedback
-                </Link>
-              </li>
+            <ul className="space-y-2.5 text-sm text-[var(--ink-500)]">
+              {PLATFORM_LINKS.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="group inline-flex items-center gap-1.5 transition-colors hover:text-[var(--cardiac-600)]"
+                  >
+                    {link.label}
+                    <ArrowUpRight className="h-3.5 w-3.5 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-100" />
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Column 3: Emergency Contacts */}
-          <div className="space-y-2">
-            <p className="text-xs font-bold uppercase tracking-wider text-red-700">
-              Emergency Hotlines
+          {/* Emergency */}
+          <div className="space-y-3 lg:col-span-2">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-red-700">
+              Emergency
             </p>
-            <div className="space-y-2 text-xs">
-              <div className="rounded-xl border border-red-200 bg-red-50 p-2.5">
-                <p className="font-bold text-red-900 flex items-center gap-1.5">
-                  <Phone className="h-3.5 w-3.5 text-red-600" /> Ambulance: 108
+            <div className="space-y-2.5">
+              <a
+                href="tel:108"
+                className="block rounded-2xl border border-red-200 bg-red-50 p-3 transition-all hover:-translate-y-0.5 hover:border-red-300 hover:shadow-md"
+              >
+                <p className="flex items-center gap-1.5 text-sm font-bold text-red-900">
+                  <Phone className="h-3.5 w-3.5 text-red-600" /> Ambulance · 108
                 </p>
-                <p className="text-[11px] text-red-700 mt-0.5">National Emergency Ambulance Service</p>
-              </div>
-              <div className="rounded-xl border border-slate-200 bg-white p-2.5">
-                <p className="font-bold text-slate-900 flex items-center gap-1.5">
-                  <Activity className="h-3.5 w-3.5 text-slate-600" /> Emergency Support: 112
+                <p className="mt-0.5 text-[11px] text-red-700">National emergency ambulance</p>
+              </a>
+              <a
+                href="tel:112"
+                className="block rounded-2xl border border-[var(--cardiac-200)] bg-white p-3 transition-all hover:-translate-y-0.5 hover:border-[var(--cardiac-300)] hover:shadow-md"
+              >
+                <p className="flex items-center gap-1.5 text-sm font-bold text-[var(--ink-900)]">
+                  <Activity className="h-3.5 w-3.5 text-[var(--cardiac-600)]" /> All-in-one · 112
                 </p>
-                <p className="text-[11px] text-slate-600 mt-0.5">All-in-one Emergency Response</p>
-              </div>
+                <p className="mt-0.5 text-[11px] text-[var(--ink-500)]">Unified emergency response</p>
+              </a>
             </div>
           </div>
 
-          {/* Column 4: Clinical Scope */}
-          <div className="space-y-2">
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-900">
-              Clinical Scope
+          {/* Clinical */}
+          <div className="space-y-3 lg:col-span-3">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--ink-900)]">
+              Clinical Basis
             </p>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Designed specifically for heart-related symptoms including angina, arrhythmias, dyspnea, and hypertensive risks. Does not analyze ECG waveforms or radiology scans.
+            <ul className="space-y-2 text-xs text-[var(--ink-500)]">
+              {CLINICAL_LINKS.map((item) => (
+                <li key={item.label} className="flex items-center gap-2">
+                  <Stethoscope className="h-3.5 w-3.5 shrink-0 text-[var(--cardiac-400)]" />
+                  {item.label}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* Disclaimer */}
+        <div className="mt-10 rounded-3xl border border-[var(--cardiac-200)]/70 bg-white/80 p-5 backdrop-blur-sm">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--cardiac-600)]" />
+            <p className="text-xs leading-relaxed text-[var(--ink-700)]">
+              <strong className="font-bold text-[var(--ink-900)]">Medical Disclaimer:</strong>{" "}
+              {t("disclaimer")} CardioCare AI is strictly an educational screening tool and does
+              not provide a definitive diagnosis. For severe chest tightness, radiating jaw or arm
+              pain, or breathing difficulty, call 108 or go to the nearest emergency department
+              immediately.
             </p>
           </div>
         </div>
 
-        {/* Disclaimer Box */}
-        <div className="mt-8 rounded-2xl border border-rose-200/60 bg-rose-50/60 p-4 text-xs text-rose-950/80">
-          <div className="flex items-start gap-2.5">
-            <AlertCircle className="h-4 w-4 shrink-0 text-rose-600 mt-0.5" />
-            <p className="leading-relaxed">
-              <strong>Medical Disclaimer:</strong> {t("disclaimer")} CardioCare AI is strictly an educational screening tool and does not provide a definitive medical diagnosis. In case of severe chest tightness, radiating jaw/arm pain, or breathing difficulty, call 108 or proceed to the nearest emergency room immediately.
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-slate-200/60 pt-6 text-[11px] text-slate-500">
+        {/* Meta row */}
+        <div className="mt-6 flex flex-col gap-4 border-t border-[var(--cardiac-100)] pt-6 text-[11px] text-[var(--ink-500)] sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} CardioCare AI. All rights reserved.</p>
-          <div className="flex gap-4">
-            <span>Privacy First (No Health Records Sold)</span>
-            <span>•</span>
-            <span>Deterministic Red-Flag Guardrails</span>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <span className="flex items-center gap-1.5">
+              <MapPin className="h-3.5 w-3.5 text-[var(--cardiac-400)]" />
+              GPS-based cardiac facility ranking
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Mail className="h-3.5 w-3.5 text-[var(--cardiac-400)]" />
+              Privacy-first · health data never sold
+            </span>
           </div>
         </div>
       </div>

@@ -1,12 +1,13 @@
 "use client";
 
-import { Building2, Hospital, MapPin, Search } from "lucide-react";
+import { Building2, Hospital, Search } from "lucide-react";
 import { useState } from "react";
 
 import { HospitalCard, type HospitalCardData } from "@/components/hospital-list";
 import { HospitalMapDynamic } from "@/components/map/hospital-map-dynamic";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { apiFetch } from "@/lib/api";
@@ -40,9 +41,10 @@ export function HospitalSection({
   const [loading, setLoading] = useState(false);
 
   const withCoords = hospitals.filter((h) => h.lat != null && h.lng != null);
-  const center = withCoords.length > 0
-    ? { lat: withCoords[0].lat as number, lng: withCoords[0].lng as number }
-    : null;
+  const center =
+    withCoords.length > 0
+      ? { lat: withCoords[0].lat as number, lng: withCoords[0].lng as number }
+      : null;
 
   async function search(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -67,51 +69,66 @@ export function HospitalSection({
 
   return (
     <section className="space-y-4" aria-labelledby="hospitals-heading">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-rose-50 text-rose-600">
-            <Hospital className="h-4 w-4" />
-          </span>
-          <h2 id="hospitals-heading" className="text-lg font-bold text-slate-900">
-            {t("result.hospitals")}
-          </h2>
-        </div>
-        <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-600">
-          Ranked by proximity & Cath Lab
-        </span>
-      </div>
-
-      {currentMeta.mode === "none" || hospitals.length === 0 ? (
-        <form onSubmit={search} className="space-y-3 rounded-2xl border border-rose-100 bg-white p-4 shadow-xs">
-          <p className="text-xs text-slate-600">
-            Enter your city or pincode to locate the closest emergency cardiac facilities:
-          </p>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1">
-              <Label htmlFor="search-city" className="text-xs">{t("check.city")}</Label>
-              <Input
-                id="search-city"
-                placeholder="e.g. Chennai"
-                value={searchCity}
-                onChange={(e) => setSearchCity(e.target.value)}
-              />
+      <Card>
+        <CardContent className="space-y-4 p-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--cardiac-50)] text-[var(--cardiac-600)]">
+                <Hospital className="h-5 w-5" />
+              </span>
+              <div>
+                <h2 id="hospitals-heading" className="text-sm font-bold text-[var(--ink-900)]">
+                  {t("result.hospitals")}
+                </h2>
+                <p className="text-[11px] text-[var(--ink-500)]">
+                  Ranked by proximity &amp; cath-lab readiness
+                </p>
+              </div>
             </div>
-            <div className="space-y-1">
-              <Label htmlFor="search-pincode" className="text-xs">{t("check.pincode")}</Label>
-              <Input
-                id="search-pincode"
-                placeholder="e.g. 600001"
-                value={searchPincode}
-                onChange={(e) => setSearchPincode(e.target.value)}
-              />
-            </div>
+            {currentMeta.urgent ? (
+              <span className="rounded-full bg-red-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-red-700">
+                Urgent
+              </span>
+            ) : null}
           </div>
-          <Button type="submit" disabled={loading} size="sm" className="w-full gap-2 rounded-xl">
-            <Search className="h-4 w-4" />
-            {loading ? "Searching..." : t("result.findHospitals")}
-          </Button>
-        </form>
-      ) : null}
+
+          {currentMeta.mode === "none" || hospitals.length === 0 ? (
+            <form onSubmit={search} className="space-y-3 border-t border-[var(--cardiac-100)] pt-4">
+              <p className="text-xs text-[var(--ink-500)]">
+                Enter your city or pincode to locate the closest emergency cardiac facilities:
+              </p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="space-y-1.5">
+                  <Label htmlFor="search-city" className="text-xs">
+                    {t("check.city")}
+                  </Label>
+                  <Input
+                    id="search-city"
+                    placeholder="e.g. Chennai"
+                    value={searchCity}
+                    onChange={(e) => setSearchCity(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="search-pincode" className="text-xs">
+                    {t("check.pincode")}
+                  </Label>
+                  <Input
+                    id="search-pincode"
+                    placeholder="e.g. 600001"
+                    value={searchPincode}
+                    onChange={(e) => setSearchPincode(e.target.value)}
+                  />
+                </div>
+              </div>
+              <Button type="submit" disabled={loading} size="sm" className="w-full">
+                <Search className="h-4 w-4" />
+                {loading ? "Searching..." : t("result.findHospitals")}
+              </Button>
+            </form>
+          ) : null}
+        </CardContent>
+      </Card>
 
       {error ? <Alert tone="error">{error}</Alert> : null}
       {currentMeta.radiusExpanded ? (
@@ -121,7 +138,7 @@ export function HospitalSection({
       ) : null}
 
       {center && withCoords.length > 0 ? (
-        <div className="overflow-hidden rounded-2xl border border-rose-100 shadow-xs">
+        <div className="overflow-hidden rounded-3xl border border-[var(--cardiac-100)] shadow-md">
           <HospitalMapDynamic
             center={center}
             showUser={currentMeta.mode === "geo"}
@@ -137,9 +154,9 @@ export function HospitalSection({
       ) : null}
 
       {hospitals.length === 0 ? (
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center">
-          <Building2 className="mx-auto h-8 w-8 text-slate-400" />
-          <p className="mt-2 text-xs text-slate-600">{t("hospitals.noResults")}</p>
+        <div className="rounded-3xl border border-dashed border-[var(--cardiac-200)] bg-[var(--cardiac-50)]/40 p-8 text-center">
+          <Building2 className="mx-auto h-8 w-8 text-[var(--cardiac-400)]" />
+          <p className="mt-2 text-xs text-[var(--ink-500)]">{t("hospitals.noResults")}</p>
         </div>
       ) : (
         <ul className="space-y-3">

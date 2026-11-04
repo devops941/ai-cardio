@@ -8,15 +8,19 @@ export function Alert({
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & { tone?: "info" | "warning" | "error" | "success" }) {
   const tones: Record<string, string> = {
-    info: "border-rose-200/80 bg-rose-50/50 text-rose-950",
+    info: "border-[var(--cardiac-200)] bg-[var(--cardiac-50)]/70 text-[var(--cardiac-950)]",
     warning: "border-amber-200 bg-amber-50 text-amber-950",
-    error: "border-rose-300 bg-rose-50 text-rose-950",
+    error: "border-[var(--cardiac-300)] bg-[var(--cardiac-50)] text-[var(--cardiac-950)]",
     success: "border-emerald-200 bg-emerald-50 text-emerald-950",
   };
   return (
     <div
       role="status"
-      className={cn("rounded-xl border p-4 text-sm leading-relaxed shadow-xs", tones[tone], className)}
+      className={cn(
+        "rounded-2xl border p-4 text-sm leading-relaxed shadow-[0_1px_2px_rgba(74,2,24,0.04)]",
+        tones[tone],
+        className,
+      )}
       {...props}
     />
   );
