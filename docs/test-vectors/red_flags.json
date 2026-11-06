@@ -35,6 +35,22 @@
     {"probability": 0.7, "expected": "MODERATE"},
     {"probability": 0.71, "expected": "HIGH"}
   ],
+  "symptom_risk": [
+    {"symptoms": [], "severity": 5, "expected": "LOW"},
+    {"symptoms": ["fatigue"], "severity": 2, "expected": "LOW"},
+    {"symptoms": ["palpitations"], "severity": 5, "expected": "LOW"},
+    {"symptoms": ["chest_pain"], "severity": 2, "duration_min": 10, "expected": "LOW"},
+    {"symptoms": ["chest_pain"], "severity": 5, "expected": "MODERATE"},
+    {"symptoms": ["chest_pain"], "severity": 2, "duration_min": 30, "expected": "MODERATE"},
+    {"symptoms": ["breathlessness"], "severity": 9, "expected": "MODERATE"},
+    {"symptoms": ["fainting"], "severity": 4, "expected": "MODERATE"},
+    {"symptoms": ["fatigue", "dizziness"], "severity": 4, "sudden": true, "expected": "MODERATE"},
+    {"symptoms": ["palpitations"], "severity": 3, "risk_factors": ["diabetes", "smoking"], "expected": "MODERATE"},
+    {"symptoms": ["chest_pain", "pain_spreading"], "severity": 7, "expected": "HIGH"},
+    {"symptoms": ["bluish_skin", "cold_sweat"], "severity": 8, "expected": "HIGH"},
+    {"symptoms": ["palpitations"], "severity": 2, "risk_factors": ["diabetes", "smoking", "hypertension"], "age": 65, "expected": "HIGH"},
+    {"symptoms": ["chest_pain", "breathlessness", "cold_sweat"], "severity": 8, "duration_min": 30, "risk_factors": ["smoking"], "age": 61, "expected": "HIGH"}
+  ],
   "ranking": {
     "radiusKm": 25,
     "hospitals": [

@@ -3,8 +3,16 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
-import { Activity, Heart, Menu, PhoneCall, UserCheck, X } from "lucide-react";
-import { useState } from "react";
+import {
+  Activity,
+  ChevronRight,
+  Heart,
+  Menu,
+  PhoneCall,
+  ShieldCheck,
+  X,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { t } from "@/lib/i18n";
@@ -23,69 +31,105 @@ export function SiteHeader() {
   const { data: session, status } = useSession();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-  const links = session?.user?.role === "ADMIN"
-    ? [{ href: "/admin", key: "nav.admin" }]
-    : USER_LINKS;
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  const links =
+    session?.user?.role === "ADMIN" ? [{ href: "/admin", key: "nav.admin" }] : USER_LINKS;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-rose-100/80 bg-white/95 backdrop-blur-md transition-all shadow-xs">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
-        {/* Brand Logo with Heartbeat */}
+    <header
+      className={cn(
+        "sticky top-0 z-50 w-full transition-all duration-300",
+        scrolled
+          ? "border-b border-[var(--cardiac-100)] bg-white/85 shadow-sm backdrop-blur-sm"
+          : "border-b border-transparent bg-white/60 backdrop-blur-sm",
+      )}
+    >
+      {/* ECG pulse strip */}
+      <div className="ecg-track h-[3px] w-full bg-gradient-to-r from-[var(--cardiac-600)] via-[var(--cardiac-400)] to-[var(--cardiac-700)]" />
+
+      <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-10">
+        {/* Brand */}
         <Link
           href={session?.user ? "/dashboard" : "/"}
-          className="group flex items-center gap-2.5 font-bold tracking-tight text-slate-900 transition-transform active:scale-95"
+          className="group flex shrink-0 items-center gap-3 transition-transform active:scale-95"
         >
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-rose-500 to-red-600 shadow-md shadow-rose-500/25 transition-transform group-hover:scale-105">
-            <Heart aria-hidden className="h-5 w-5 text-white animate-heartbeat fill-white/20" />
+          <span className="relative flex h-11 w-11 items-center justify-center rounded-md bg-gradient-to-br from-[var(--cardiac-500)] to-[var(--cardiac-800)] transition-transform duration-300 group-hover:scale-105">
+            <span className="absolute inset-0 rounded-md bg-[var(--cardiac-400)]/40 animate-ring-ping" />
+            <Heart
+              aria-hidden
+              className="relative h-5 w-5 animate-heartbeat fill-white/25 text-white"
+            />
           </span>
-          <div className="flex flex-col">
-            <span className="text-lg font-black text-slate-900 leading-none">
-              Cardio<span className="text-rose-600">Care</span>
+          <span className="flex flex-col leading-none">
+            <span className="text-lg font-black tracking-tight text-[var(--ink-900)]">
+              Cardio<span className="text-[var(--cardiac-600)]">Care</span>
             </span>
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-rose-500">
+            <span className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--cardiac-500)]">
               Heart Screening AI
             </span>
-          </div>
+          </span>
         </Link>
 
-        {/* Desktop Navigation Links */}
-        <nav aria-label={t("a11y.mainNav")} className="hidden items-center gap-1.5 md:flex">
+        {/* Desktop nav */}
+        <nav aria-label={t("a11y.mainNav")} className="hidden items-center gap-1 lg:flex">
           {links.map((link) => {
-            const active = pathname === link.href || (link.href !== "/dashboard" && pathname.startsWith(`${link.href}/`));
+            const active =
+              pathname === link.href ||
+              (link.href !== "/dashboard" && pathname.startsWith(`${link.href}/`));
             return (
               <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "relative rounded-xl px-3.5 py-2 text-sm font-semibold transition-all duration-150",
+                  "relative rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200",
                   active
-                    ? "bg-rose-50 text-rose-700 font-bold shadow-xs border border-rose-200/60"
-                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
+                    ? "bg-[var(--cardiac-50)] text-[var(--cardiac-700)]"
+                    : "text-[var(--ink-500)] hover:bg-[var(--cardiac-50)]/70 hover:text-[var(--cardiac-700)]",
                 )}
               >
                 {t(link.key)}
+                {active ? (
+                  <span className="absolute -bottom-0.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-[var(--cardiac-600)]" />
+                ) : null}
               </Link>
             );
           })}
         </nav>
 
-        {/* Right Action Buttons */}
-        <div className="hidden items-center gap-2.5 md:flex">
-          {/* Quick 108 Emergency Callout */}
+        {/* Actions */}
+        <div className="hidden items-center gap-2.5 lg:flex">
           <a
             href="tel:108"
-            title="Emergency Medical Hotline"
-            className="flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50/80 px-3 py-1.5 text-xs font-bold text-red-700 transition-all hover:bg-red-100 hover:border-red-300"
+            title="Emergency medical hotline"
+            className="flex items-center gap-1.5 rounded-full border border-red-200 bg-red-50/80 px-3.5 py-1.5 text-xs font-bold text-red-700 transition-all hover:-translate-y-0.5 hover:border-red-300 hover:bg-red-100"
           >
-            <PhoneCall className="h-3.5 w-3.5 text-red-600 animate-pulse" />
+            <PhoneCall className="h-3.5 w-3.5 animate-pulse text-red-600" />
             <span>108</span>
           </a>
 
-          {status === "loading" ? null : session?.user ? (
-            <div className="flex items-center gap-2 pl-1 border-l border-slate-200">
-              <span className="max-w-[10rem] truncate text-xs font-medium text-slate-600" title={session.user.email ?? ""}>
-                {session.user.email}
+          {status === "loading" ? (
+            <div className="h-9 w-28 animate-pulse rounded-full bg-[var(--cardiac-50)]" />
+          ) : session?.user ? (
+            <div className="flex items-center gap-2.5 border-l border-[var(--cardiac-100)] pl-3">
+              <span className="flex items-center gap-2">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[var(--cardiac-100)] to-[var(--cardiac-200)] text-xs font-bold text-[var(--cardiac-800)]">
+                  {(session.user.name ?? session.user.email ?? "U").slice(0, 1).toUpperCase()}
+                </span>
+                <span className="max-w-[9rem] truncate text-xs font-medium text-[var(--ink-500)]">
+                  {session.user.email}
+                </span>
               </span>
               <Button
                 variant="outline"
@@ -101,85 +145,105 @@ export function SiteHeader() {
               <Button variant="ghost" size="sm" asChild>
                 <Link href="/login">{t("nav.signIn")}</Link>
               </Button>
-              <Button size="sm" asChild className="shadow-rose-600/20">
-                <Link href="/register">{t("nav.register")}</Link>
+              <Button size="sm" asChild>
+                <Link href="/register" className="flex items-center gap-1">
+                  {t("nav.register")}
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
               </Button>
             </div>
           )}
         </div>
 
-        {/* Mobile Nav Toggle Button */}
+        {/* Mobile toggle */}
         <button
           type="button"
           aria-label={t("a11y.toggleNav")}
           aria-expanded={open}
-          className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-rose-200/70 bg-rose-50/50 text-slate-700 md:hidden transition-colors hover:bg-rose-100/60"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-[var(--cardiac-200)] bg-[var(--cardiac-50)]/70 text-[var(--ink-700)] transition-colors hover:bg-[var(--cardiac-100)] lg:hidden"
           onClick={() => setOpen((v) => !v)}
         >
-          {open ? <X aria-hidden className="h-5 w-5 text-rose-700" /> : <Menu aria-hidden className="h-5 w-5 text-slate-700" />}
+          {open ? (
+            <X aria-hidden className="h-5 w-5 text-[var(--cardiac-700)]" />
+          ) : (
+            <Menu aria-hidden className="h-5 w-5" />
+          )}
         </button>
       </div>
 
-      {/* Mobile Dropdown Nav Menu */}
-      {open ? (
-        <nav
-          aria-label={t("a11y.mobileNav")}
-          className="border-t border-rose-100 bg-white/98 backdrop-blur-lg px-4 py-3 md:hidden shadow-xl"
-        >
-          <div className="space-y-1">
-            {links.map((link) => (
+      {/* Mobile menu */}
+      <div
+        className={cn(
+          "overflow-hidden border-t border-[var(--cardiac-100)] bg-white/95 backdrop-blur-xl transition-[max-height,opacity] duration-300 lg:hidden",
+          open ? "max-h-[80vh] opacity-100" : "max-h-0 opacity-0",
+        )}
+      >
+        <nav aria-label={t("a11y.mobileNav")} className="space-y-1 px-4 py-4 sm:px-6">
+          {links.map((link) => {
+            const active =
+              pathname === link.href ||
+              (link.href !== "/dashboard" && pathname.startsWith(`${link.href}/`));
+            return (
               <Link
                 key={link.href}
                 href={link.href}
-                onClick={() => setOpen(false)}
                 className={cn(
-                  "block rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-colors",
-                  pathname === link.href ? "bg-rose-50 text-rose-700 font-bold" : "text-slate-700 hover:bg-slate-100",
+                  "flex items-center justify-between rounded-md px-4 py-3 text-sm font-semibold transition-colors",
+                  active
+                    ? "bg-[var(--cardiac-50)] text-[var(--cardiac-700)]"
+                    : "text-[var(--ink-700)] hover:bg-[var(--cardiac-50)]/60",
                 )}
               >
-                {t(link.key)}
+                <span className="flex items-center gap-3">
+                  <Activity className="h-4 w-4 text-[var(--cardiac-500)]" />
+                  {t(link.key)}
+                </span>
+                <ChevronRight className="h-4 w-4 text-[var(--ink-300)]" />
               </Link>
-            ))}
-          </div>
+            );
+          })}
 
-          <div className="mt-3 pt-3 border-t border-slate-100 space-y-2">
+          <div className="mt-3 space-y-2 border-t border-[var(--cardiac-100)] pt-4">
             <a
               href="tel:108"
-              className="flex items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm"
+              className="flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-red-600 to-[var(--cardiac-700)] px-4 py-3 text-sm font-bold text-white"
             >
               <PhoneCall className="h-4 w-4" />
-              <span>Emergency Ambulance: Call 108</span>
+              Emergency Ambulance — Call 108
             </a>
 
             {session?.user ? (
               <button
                 type="button"
                 onClick={() => signOut({ callbackUrl: "/" })}
-                className="block w-full rounded-xl px-3.5 py-2.5 text-center text-sm font-medium text-slate-700 border border-slate-200 hover:bg-slate-100"
+                className="block w-full rounded-full border border-[var(--cardiac-200)] px-4 py-3 text-center text-sm font-semibold text-[var(--ink-700)] transition-colors hover:bg-[var(--cardiac-50)]"
               >
-                {t("nav.signOut")} ({session.user.email})
+                {t("nav.signOut")}
               </button>
             ) : (
               <div className="grid grid-cols-2 gap-2">
                 <Link
                   href="/login"
-                  onClick={() => setOpen(false)}
-                  className="rounded-xl border border-slate-200 px-3 py-2.5 text-center text-sm font-semibold text-slate-700 hover:bg-slate-100"
+                  className="rounded-full border border-[var(--cardiac-200)] px-4 py-3 text-center text-sm font-semibold text-[var(--ink-700)] transition-colors hover:bg-[var(--cardiac-50)]"
                 >
                   {t("nav.signIn")}
                 </Link>
                 <Link
                   href="/register"
-                  onClick={() => setOpen(false)}
-                  className="rounded-xl bg-rose-600 px-3 py-2.5 text-center text-sm font-semibold text-white hover:bg-rose-700 shadow-sm"
+                  className="rounded-full bg-gradient-to-r from-[var(--cardiac-600)] to-[var(--cardiac-800)] px-4 py-3 text-center text-sm font-semibold text-white"
                 >
                   {t("nav.register")}
                 </Link>
               </div>
             )}
           </div>
+
+          <div className="flex items-center gap-2 rounded-md bg-emerald-50 p-3 text-[11px] font-semibold text-emerald-800">
+            <ShieldCheck className="h-4 w-4 text-emerald-600" />
+            Evidence-grounded · Non-diagnostic screening aid
+          </div>
         </nav>
-      ) : null}
+      </div>
     </header>
   );
 }

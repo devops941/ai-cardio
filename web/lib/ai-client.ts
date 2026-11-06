@@ -64,6 +64,7 @@ export interface ClinicalAIResponse {
   probability: number;
   risk_level: RiskLevel;
   model_version: number;
+  model_versions?: number[];
 }
 
 export interface IngestResponse {
@@ -86,6 +87,7 @@ export interface MlVersion {
 export interface MlVersionsResponse {
   versions: MlVersion[];
   active_version: number | null;
+  active_versions?: number[];
 }
 
 async function request<T>(
@@ -189,10 +191,22 @@ export function listMlVersions(): Promise<MlVersionsResponse> {
   return request<MlVersionsResponse>("/ml/versions", { method: "GET" });
 }
 
-export function activateMlVersion(version: number): Promise<{ active_version: number }> {
-  return request<{ active_version: number }>(`/ml/activate/${version}`, {
-    method: "POST",
-  });
+export function activateMlVersion(
+  version: number,
+): Promise<{ active_version: number; active_versions?: number[] }> {
+  return request<{ active_version: number; active_versions?: number[] }>(
+    `/ml/activate/${version}`,
+    { method: "POST" },
+  );
+}
+
+export function deactivateMlVersion(
+  version: number,
+): Promise<{ active_version: number | null; active_versions?: number[] }> {
+  return request<{ active_version: number | null; active_versions?: number[] }>(
+    `/ml/deactivate/${version}`,
+    { method: "POST" },
+  );
 }
 
 export function trainModel(file?: File): Promise<MlVersion> {

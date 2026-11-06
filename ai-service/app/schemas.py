@@ -115,6 +115,7 @@ class ClinicalResponse(BaseModel):
     probability: float
     risk_level: RiskLevel
     model_version: int
+    model_versions: list[int] = []
 
 
 class IngestResponse(BaseModel):

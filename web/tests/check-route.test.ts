@@ -122,4 +122,61 @@ describe("POST /api/check orchestration", () => {
     expect(response.status).toBe(422);
     expect(body.error.code).toBe("VALIDATION_FAILED");
   });
+
+  it("falls back to the deterministic symptom score when the AI service is down", async () => {
+    predictSymptoms.mockRejectedValue(new Error("AI service down"));
+
+    const response = await POST(
+      makeRequest({
+        symptoms: ["bluish_skin", "cold_sweat"],
+        severity: 8,
+        consent: true,
+      }),
+    );
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.status).toBe("llm_unavailable");
+    expect(body.emergency).toBe(false);
+    expect(body.llmRisk).toBe("HIGH");
+    expect(body.finalRisk).toBe("HIGH");
+    expect(body.result.risk_level).toBe("HIGH");
+  });
+
+  it("reports a Low band from symptoms alone for a mild presentation", async () => {
+    predictSymptoms.mockRejectedValue(new Error("AI service down"));
+
+    const response = await POST(
+      makeRequest({ symptoms: ["fatigue"], severity: 2, consent: true }),
+    );
+    const body = await response.json();
+
+    expect(body.llmRisk).toBe("LOW");
+    expect(body.finalRisk).toBe("LOW");
+  });
+
+  it("keeps the non-heart refusal unbanded", async () => {
+    predictSymptoms.mockResolvedValue({
+      status: "non_heart",
+      emergency: false,
+      fired_rules: [],
+      is_heart_related: false,
+      risk_level: null,
+      possible_conditions: [],
+      explanation: "not heart",
+      recommended_specialist: null,
+      next_steps: [],
+      lifestyle_tips: [],
+      sources: [],
+      disclaimer: "d",
+      message: "not heart",
+      retrieved: [],
+    });
+
+    const response = await POST(makeRequest({ symptoms: ["chest_pain"], consent: true }));
+    const body = await response.json();
+
+    expect(body.status).toBe("non_heart");
+    expect(body.finalRisk).toBeNull();
+  });
 });

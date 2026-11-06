@@ -6,7 +6,7 @@ export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
   return (
     <div
       className={cn(
-        "rounded-2xl border border-rose-100/80 bg-white/95 shadow-sm shadow-rose-950/5 transition-all duration-200 hover:border-rose-200 hover:shadow-md hover:shadow-rose-950/5",
+        "relative rounded-md border border-[var(--cardiac-100)] bg-white shadow-sm transition-colors duration-200 hover:border-[var(--cardiac-200)]",
         className,
       )}
       {...props}
@@ -17,7 +17,7 @@ export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElemen
 export function CardHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("flex flex-col gap-1.5 border-b border-rose-50/80 px-6 py-5", className)}
+      className={cn("flex flex-col gap-1.5 border-b border-[var(--cardiac-50)] px-6 py-5", className)}
       {...props}
     />
   );
@@ -26,14 +26,14 @@ export function CardHeader({ className, ...props }: React.HTMLAttributes<HTMLDiv
 export function CardTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h2
-      className={cn("text-xl font-bold tracking-tight text-slate-900", className)}
+      className={cn("text-xl font-bold tracking-tight text-[var(--ink-900)]", className)}
       {...props}
     />
   );
 }
 
 export function CardDescription({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
-  return <p className={cn("text-sm text-slate-600 leading-relaxed", className)} {...props} />;
+  return <p className={cn("text-sm leading-relaxed text-[var(--ink-500)]", className)} {...props} />;
 }
 
 export function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
@@ -43,7 +43,7 @@ export function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDi
 export function CardFooter({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("flex items-center gap-3 border-t border-rose-50/80 px-6 py-4", className)}
+      className={cn("flex items-center gap-3 border-t border-[var(--cardiac-50)] px-6 py-4", className)}
       {...props}
     />
   );

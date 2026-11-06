@@ -1,12 +1,39 @@
 @import "tailwindcss";
 
+/* ==========================================================================
+   CardioCare AI — Cardiac Clinical Design System
+   A heart-focused visual language built on a deep cardiac-red palette.
+   ========================================================================== */
+
 :root {
-  --background: #ffffff;
-  --foreground: #0f172a;
-  --cardiac-red: #e11d48;
-  --cardiac-dark-red: #be123c;
-  --cardiac-deep: #881337;
-  --cardiac-rose: #fff1f2;
+  --background: #fdfbfb;
+  --foreground: #1a0a0e;
+
+  /* Cardiac red ramp */
+  --cardiac-50: #fff1f3;
+  --cardiac-100: #ffe0e5;
+  --cardiac-200: #ffc6cf;
+  --cardiac-300: #ff9dad;
+  --cardiac-400: #fb6482;
+  --cardiac-500: #f1335c;
+  --cardiac-600: #de1145;
+  --cardiac-700: #bb0838;
+  --cardiac-800: #9c0b35;
+  --cardiac-900: #850f34;
+  --cardiac-950: #4a0218;
+
+  /* Clinical neutrals */
+  --ink-900: #1a0a0e;
+  --ink-700: #43242c;
+  --ink-500: #7a5560;
+  --ink-300: #b9a2a9;
+  --ink-100: #ece4e6;
+  --ink-50: #f7f2f3;
+
+  --cardiac-red: var(--cardiac-600);
+  --cardiac-dark-red: var(--cardiac-800);
+  --cardiac-deep: var(--cardiac-950);
+  --cardiac-rose: var(--cardiac-50);
 }
 
 @theme inline {
@@ -14,42 +41,119 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Radius token scale — overrides Tailwind defaults */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;   /* 10px — the standard */
+  --radius-lg: 0.75rem;    /* 12px — large panels/modals */
+  --radius-xl: 1rem;
+
+  --color-cardiac-50: var(--cardiac-50);
+  --color-cardiac-100: var(--cardiac-100);
+  --color-cardiac-200: var(--cardiac-200);
+  --color-cardiac-300: var(--cardiac-300);
+  --color-cardiac-400: var(--cardiac-400);
+  --color-cardiac-500: var(--cardiac-500);
+  --color-cardiac-600: var(--cardiac-600);
+  --color-cardiac-700: var(--cardiac-700);
+  --color-cardiac-800: var(--cardiac-800);
+  --color-cardiac-900: var(--cardiac-900);
+  --color-cardiac-950: var(--cardiac-950);
+  --color-ink-900: var(--ink-900);
+  --color-ink-700: var(--ink-700);
+  --color-ink-500: var(--ink-500);
+  --color-ink-300: var(--ink-300);
+  --color-ink-100: var(--ink-100);
+  --color-ink-50: var(--ink-50);
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background-color: #fafaf9;
-  color: #0f172a;
+  background-color: var(--background);
+  color: var(--ink-900);
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-/* Cardiac & Medical Keyframe Animations */
+::selection {
+  background: var(--cardiac-600);
+  color: #fff;
+}
+
+/* ==========================================================================
+   Keyframe animations
+   ========================================================================== */
+
 @keyframes heartbeat {
   0% { transform: scale(1); }
   14% { transform: scale(1.16); }
   28% { transform: scale(1); }
-  42% { transform: scale(1.10); }
+  42% { transform: scale(1.1); }
   70% { transform: scale(1); }
   100% { transform: scale(1); }
 }
 
 @keyframes pulseGlow {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 0 12px rgba(225, 29, 72, 0);
-  }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(222, 17, 69, 0.45); }
+  50% { box-shadow: 0 0 0 14px rgba(222, 17, 69, 0); }
 }
 
 @keyframes softFloat {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-6px); }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }
 
-@keyframes ecgLine {
+@keyframes ecgTrace {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
+}
+
+@keyframes fadeRise {
+  0% { opacity: 0; transform: translateY(24px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  0% { opacity: 0; transform: scale(0.94); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes gradientPan {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes ringPing {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+
+@keyframes spinSlow {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 .animate-heartbeat {
@@ -57,54 +161,200 @@ body {
   transform-origin: center;
 }
 
+.heartbeat {
+  animation: heartbeat 1.4s ease-in-out infinite;
+  transform-origin: center;
+}
+
 .animate-pulse-glow {
-  animation: pulseGlow 2s infinite;
+  animation: pulseGlow 2.2s infinite;
 }
 
 .animate-soft-float {
-  animation: softFloat 4s ease-in-out infinite;
+  animation: softFloat 5s ease-in-out infinite;
 }
 
-/* Medical & Heart Styling Accents */
+.animate-fade-rise {
+  animation: fadeRise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out both;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-gradient-pan {
+  background-size: 220% 220%;
+  animation: gradientPan 9s ease infinite;
+}
+
+.animate-spin-slow {
+  animation: spinSlow 22s linear infinite;
+}
+
+.animate-ring-ping {
+  animation: ringPing 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.animate-marquee {
+  animation: marquee 32s linear infinite;
+}
+
+/* Scroll-reveal — toggled by the Reveal component via IntersectionObserver */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 { transition-delay: 0.08s; }
+.reveal-delay-2 { transition-delay: 0.16s; }
+.reveal-delay-3 { transition-delay: 0.24s; }
+.reveal-delay-4 { transition-delay: 0.32s; }
+.reveal-delay-5 { transition-delay: 0.4s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .animate-heartbeat, .heartbeat, .animate-pulse-glow, .animate-soft-float,
+  .animate-fade-rise, .animate-fade-in, .animate-scale-in, .animate-gradient-pan,
+  .animate-spin-slow, .animate-ring-ping, .animate-marquee,
+  .shimmer-bar {
+    animation: none !important;
+  }
+  html { scroll-behavior: auto; }
+}
+
+/* ==========================================================================
+   Surfaces, gradients & glass
+   ========================================================================== */
+
 .cardiac-gradient {
-  background: linear-gradient(135deg, #e11d48 0%, #be123c 50%, #9f1239 100%);
+  background-image: linear-gradient(135deg, var(--cardiac-600) 0%, var(--cardiac-800) 52%, var(--cardiac-950) 100%);
 }
 
 .cardiac-gradient-subtle {
-  background: linear-gradient(180deg, #fff1f2 0%, #ffffff 100%);
+  background-image: linear-gradient(180deg, var(--cardiac-50) 0%, #ffffff 100%);
+}
+
+.cardiac-mesh {
+  background-color: var(--cardiac-950);
+  background-image:
+    radial-gradient(at 12% 8%, rgba(241, 51, 92, 0.5) 0px, transparent 55%),
+    radial-gradient(at 88% 0%, rgba(133, 15, 52, 0.55) 0px, transparent 50%),
+    radial-gradient(at 75% 92%, rgba(222, 17, 69, 0.4) 0px, transparent 52%),
+    radial-gradient(at 0% 100%, rgba(74, 2, 24, 0.75) 0px, transparent 55%);
 }
 
 .cardiac-card {
   background: #ffffff;
-  border: 1px solid #ffe4e6;
-  border-radius: 1rem;
-  box-shadow: 0 4px 20px -2px rgba(225, 29, 72, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
-  transition: all 0.25s ease;
+  border: 1px solid var(--cardiac-100);
+  border-radius: var(--radius-md);
+  box-shadow: 0 1px 2px rgba(74, 2, 24, 0.04);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .cardiac-card:hover {
-  border-color: #fecdd3;
-  box-shadow: 0 10px 25px -4px rgba(225, 29, 72, 0.1), 0 4px 10px -2px rgba(0, 0, 0, 0.05);
+  border-color: var(--cardiac-200);
+  box-shadow: 0 1px 3px rgba(74, 2, 24, 0.06);
 }
 
 .cardiac-glass {
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(254, 205, 211, 0.6);
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(8px) saturate(150%);
+  border: 1px solid rgba(255, 198, 207, 0.6);
 }
 
-/* Scrollbar styling */
+.cardiac-glass-dark {
+  background: rgba(74, 2, 24, 0.42);
+  backdrop-filter: blur(8px) saturate(140%);
+  border: 1px solid rgba(255, 157, 173, 0.24);
+}
+
+/* Hairline gradient border wrapper */
+.cardiac-ring {
+  position: relative;
+}
+
+.cardiac-ring::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(140deg, rgba(241, 51, 92, 0.55), rgba(222, 17, 69, 0.08) 45%, rgba(222, 17, 69, 0.4));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.text-cardiac-gradient {
+  background-image: linear-gradient(100deg, var(--cardiac-500), var(--cardiac-700) 55%, var(--cardiac-900));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.shimmer-bar {
+  background-image: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite;
+}
+
+/* ECG pulse line used in headers */
+.ecg-track {
+  position: relative;
+  overflow: hidden;
+}
+
+.ecg-track::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.85), transparent);
+  animation: ecgTrace 3.4s linear infinite;
+}
+
+/* ==========================================================================
+   Scrollbar
+   ========================================================================== */
+
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: var(--cardiac-50);
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: linear-gradient(180deg, var(--cardiac-400), var(--cardiac-700));
   border-radius: 9999px;
+  border: 2px solid var(--cardiac-50);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: linear-gradient(180deg, var(--cardiac-500), var(--cardiac-800));
+}
+
+/* ==========================================================================
+   Utilities
+   ========================================================================== */
+
+.text-balance { text-wrap: balance; }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+@media print {
+  header, footer, .print\:hidden { display: none !important; }
 }

@@ -76,11 +76,17 @@ export async function GET() {
     const versions = await prisma.mlModelVersion.findMany({
       orderBy: { version: "desc" },
     });
-    const active = versions.find((v) => v.isActive) ?? null;
+    const activeVersions = versions
+      .filter((v) => v.isActive)
+      .map((v) => v.version)
+      .sort((a, b) => a - b);
+    const activeVersion =
+      activeVersions.length > 0 ? Math.max(...activeVersions) : null;
 
     return NextResponse.json({
       versions,
-      activeVersion: active?.version ?? null,
+      activeVersion,
+      activeVersions,
       aiReachable,
     });
   } catch (err) {

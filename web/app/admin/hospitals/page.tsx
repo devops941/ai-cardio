@@ -2,12 +2,16 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Building2, Edit, Plus, Search, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
+import { AdminPageHeader } from "@/components/admin/admin-page-header";
+import { AdminEmpty, AdminTable, AdminTableCard } from "@/components/admin/admin-table";
 import { BulkImportCard } from "@/components/admin/bulk-import-card";
 import { Alert } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { ConfirmDeleteDialog } from "@/components/ui/confirm-delete-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -39,6 +43,7 @@ export default function AdminHospitalsPage() {
   const [error, setError] = useState<string | null>(null);
   const [draft, setDraft] = useState<Partial<HospitalRow> | null>(null);
   const [saving, setSaving] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -59,6 +64,7 @@ export default function AdminHospitalsPage() {
     if (!draft) return;
     setSaving(true);
     setError(null);
+    const isEdit = Boolean(draft.id);
     try {
       const payload = {
         name: draft.name ?? "",
@@ -85,194 +91,178 @@ export default function AdminHospitalsPage() {
       }
       setDraft(null);
       await load();
+      toast.success(isEdit ? "Hospital updated successfully." : "Hospital added successfully.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("errors.generic"));
+      const message = err instanceof Error ? err.message : t("errors.generic");
+      setError(message);
+      toast.error(message);
     } finally {
       setSaving(false);
     }
   }
 
-  async function remove(id: string) {
-    if (!window.confirm(t("fields.deleteConfirmHospital"))) return;
+  async function handleConfirmDelete() {
+    if (!pendingDeleteId) return;
+    const id = pendingDeleteId;
+    setPendingDeleteId(null);
     try {
       await apiFetch(`/api/admin/hospitals/${id}`, { method: "DELETE" });
       setRows((prev) => (prev ? prev.filter((row) => row.id !== id) : prev));
+      toast.success("Hospital deleted successfully.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("errors.generic"));
+      const message = err instanceof Error ? err.message : t("errors.generic");
+      setError(message);
+      toast.error(message);
     }
   }
 
   return (
     <div className="space-y-6">
+      <ConfirmDeleteDialog
+        open={pendingDeleteId !== null}
+        onOpenChange={(open) => { if (!open) setPendingDeleteId(null); }}
+        title={t("admin.delete")}
+        description={t("fields.deleteConfirmHospital")}
+        onConfirm={handleConfirmDelete}
+      />
+
+      <AdminPageHeader
+        icon={Building2}
+        title={t("admin.hospitals")}
+        subtitle="Manage certified cardiology centers, 24×7 emergency facilities, and catheterization labs."
+        action={
+          <Button size="sm" onClick={() => setDraft({ ...EMPTY })}>
+            <Plus className="h-4 w-4" />
+            {t("admin.add")}
+          </Button>
+        }
+      />
+
       {error ? <Alert tone="error">{error}</Alert> : null}
 
-      <Card className="border-rose-100 shadow-xs">
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-base text-slate-900">
-            <Building2 className="h-4 w-4 text-rose-600" />
-            {t("admin.hospitals")}
-          </CardTitle>
-          <p className="text-xs text-slate-500">
-            Manage certified cardiology health centers, emergency facilities, and cath labs
-          </p>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <div className="relative w-full max-w-sm">
-              <Input
-                id="q"
-                placeholder="Search by hospital name or city..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="pl-9"
-              />
-              <Search className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-slate-400" />
-            </div>
-            <Button onClick={() => setDraft({ ...EMPTY })} size="sm" className="gap-1.5 rounded-xl">
-              <Plus className="h-4 w-4" />
-              {t("admin.add")}
-            </Button>
+      {draft ? (
+        <div className="space-y-4 rounded-lg border border-[var(--cardiac-200)] bg-[var(--cardiac-50)]/40 p-5">
+          <h4 className="text-xs font-black uppercase tracking-[0.14em] text-[var(--cardiac-800)]">
+            {draft.id ? "Edit cardiac facility" : "Add new cardiac facility"}
+          </h4>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <Field id="h-name" label={t("fields.name")} value={draft.name ?? ""} onChange={(v) => setDraft({ ...draft, name: v })} />
+            <Field id="h-address" label={t("fields.address")} value={draft.address ?? ""} onChange={(v) => setDraft({ ...draft, address: v })} />
+            <Field id="h-city" label={t("fields.city")} value={draft.city ?? ""} onChange={(v) => setDraft({ ...draft, city: v })} />
+            <Field id="h-state" label={t("fields.state")} value={draft.state ?? ""} onChange={(v) => setDraft({ ...draft, state: v })} />
+            <Field id="h-pincode" label={t("fields.pincode")} value={draft.pincode ?? ""} onChange={(v) => setDraft({ ...draft, pincode: v })} />
+            <Field id="h-phone" label={t("fields.phone")} value={draft.phone ?? ""} onChange={(v) => setDraft({ ...draft, phone: v })} />
+            <Field
+              id="h-lat"
+              label={t("fields.latitude")}
+              type="number"
+              step="any"
+              value={draft.latitude ?? ""}
+              onChange={(v) => setDraft({ ...draft, latitude: v ? Number(v) : null })}
+            />
+            <Field
+              id="h-lng"
+              label={t("fields.longitude")}
+              type="number"
+              step="any"
+              value={draft.longitude ?? ""}
+              onChange={(v) => setDraft({ ...draft, longitude: v ? Number(v) : null })}
+            />
+            <Field
+              id="h-rating"
+              label={t("fields.rating")}
+              type="number"
+              step="0.1"
+              min={0}
+              max={5}
+              value={draft.rating ?? 0}
+              onChange={(v) => setDraft({ ...draft, rating: Number(v) })}
+            />
+            <Field
+              id="h-beds"
+              label={t("fields.beds")}
+              type="number"
+              value={draft.beds ?? ""}
+              onChange={(v) => setDraft({ ...draft, beds: v ? Number(v) : null })}
+            />
           </div>
 
-          {draft ? (
-            <div className="space-y-4 rounded-2xl border border-rose-200/80 bg-rose-50/20 p-5">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-rose-800">
-                {draft.id ? "Edit Cardiac Facility" : "Add New Cardiac Facility"}
-              </h4>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="space-y-1">
-                  <Label htmlFor="h-name" className="text-xs">{t("fields.name")}</Label>
-                  <Input id="h-name" value={draft.name ?? ""} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="h-address" className="text-xs">{t("fields.address")}</Label>
-                  <Input id="h-address" value={draft.address ?? ""} onChange={(e) => setDraft({ ...draft, address: e.target.value })} />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="h-city" className="text-xs">{t("fields.city")}</Label>
-                  <Input id="h-city" value={draft.city ?? ""} onChange={(e) => setDraft({ ...draft, city: e.target.value })} />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="h-state" className="text-xs">{t("fields.state")}</Label>
-                  <Input id="h-state" value={draft.state ?? ""} onChange={(e) => setDraft({ ...draft, state: e.target.value })} />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="h-pincode" className="text-xs">{t("fields.pincode")}</Label>
-                  <Input id="h-pincode" value={draft.pincode ?? ""} onChange={(e) => setDraft({ ...draft, pincode: e.target.value })} />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="h-phone" className="text-xs">{t("fields.phone")}</Label>
-                  <Input id="h-phone" value={draft.phone ?? ""} onChange={(e) => setDraft({ ...draft, phone: e.target.value })} />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="h-lat" className="text-xs">{t("fields.latitude")}</Label>
-                  <Input
-                    id="h-lat"
-                    type="number"
-                    step="any"
-                    value={draft.latitude ?? ""}
-                    onChange={(e) => setDraft({ ...draft, latitude: e.target.value ? Number(e.target.value) : null })}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="h-lng" className="text-xs">{t("fields.longitude")}</Label>
-                  <Input
-                    id="h-lng"
-                    type="number"
-                    step="any"
-                    value={draft.longitude ?? ""}
-                    onChange={(e) => setDraft({ ...draft, longitude: e.target.value ? Number(e.target.value) : null })}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="h-rating" className="text-xs">{t("fields.rating")}</Label>
-                  <Input
-                    id="h-rating"
-                    type="number"
-                    step="0.1"
-                    min={0}
-                    max={5}
-                    value={draft.rating ?? 0}
-                    onChange={(e) => setDraft({ ...draft, rating: Number(e.target.value) })}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="h-beds" className="text-xs">{t("fields.beds")}</Label>
-                  <Input
-                    id="h-beds"
-                    type="number"
-                    value={draft.beds ?? ""}
-                    onChange={(e) => setDraft({ ...draft, beds: e.target.value ? Number(e.target.value) : null })}
-                  />
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-4 pt-1">
-                <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-slate-700">
-                  <Checkbox id="h-em" checked={Boolean(draft.emergency24x7)} onChange={(e) => setDraft({ ...draft, emergency24x7: e.target.checked })} />
-                  <span>24×7 Emergency</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-slate-700">
-                  <Checkbox id="h-card" checked={Boolean(draft.hasCardiology)} onChange={(e) => setDraft({ ...draft, hasCardiology: e.target.checked })} />
-                  <span>{t("fields.cardiology")} Unit</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-slate-700">
-                  <Checkbox id="h-cath" checked={Boolean(draft.hasCathLab)} onChange={(e) => setDraft({ ...draft, hasCathLab: e.target.checked })} />
-                  <span>{t("fields.cathLab")}</span>
-                </label>
-              </div>
-              <div className="flex gap-2 pt-2 border-t border-rose-200/60">
-                <Button onClick={save} disabled={saving} size="sm" className="rounded-xl">
-                  {saving ? "Saving..." : t("admin.save")}
-                </Button>
-                <Button variant="ghost" onClick={() => setDraft(null)} size="sm" className="rounded-xl">
-                  {t("admin.cancel")}
-                </Button>
-              </div>
-            </div>
-          ) : null}
+          <div className="flex flex-wrap gap-5 border-t border-[var(--cardiac-200)]/60 pt-4">
+            <Toggle label="24×7 emergency" checked={Boolean(draft.emergency24x7)} onChange={(c) => setDraft({ ...draft, emergency24x7: c })} />
+            <Toggle label={`${t("fields.cardiology")} unit`} checked={Boolean(draft.hasCardiology)} onChange={(c) => setDraft({ ...draft, hasCardiology: c })} />
+            <Toggle label={t("fields.cathLab")} checked={Boolean(draft.hasCathLab)} onChange={(c) => setDraft({ ...draft, hasCathLab: c })} />
+          </div>
 
-          {rows === null ? (
-            <Skeleton className="h-40 w-full rounded-2xl" />
-          ) : rows.length === 0 ? (
-            <p className="text-xs text-slate-500 text-center py-6">{t("admin.noData")}</p>
-          ) : (
-            <div className="overflow-x-auto rounded-xl border border-slate-100">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50/80 font-semibold text-slate-700 border-b border-slate-100">
-                  <tr>
-                    <th scope="col" className="px-4 py-3">{t("fields.name")}</th>
-                    <th scope="col" className="px-4 py-3">{t("fields.city")}</th>
-                    <th scope="col" className="px-4 py-3">{t("fields.phone")}</th>
-                    <th scope="col" className="px-4 py-3">{t("fields.rating")}</th>
-                    <th scope="col" className="px-4 py-3 text-right">{t("fields.actions")}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-700">
-                  {rows.map((row) => (
-                    <tr key={row.id} className="hover:bg-slate-50/40">
-                      <td className="px-4 py-3 font-semibold text-slate-900">{row.name}</td>
-                      <td className="px-4 py-3">{row.city ?? "—"}</td>
-                      <td className="px-4 py-3 font-mono text-[11px]">{row.phone ?? "—"}</td>
-                      <td className="px-4 py-3 font-semibold text-amber-600">★ {row.rating.toFixed(1)}</td>
-                      <td className="px-4 py-3 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <Button variant="outline" size="sm" onClick={() => setDraft(row)} className="h-7 text-xs rounded-lg">
-                            <Edit className="h-3 w-3 mr-1" />
-                            {t("admin.edit")}
-                          </Button>
-                          <Button variant="ghost" size="sm" onClick={() => remove(row.id)} className="h-7 w-7 p-0 rounded-lg text-slate-400 hover:text-rose-600">
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+          <div className="flex gap-2 border-t border-[var(--cardiac-200)]/60 pt-4">
+            <Button onClick={save} disabled={saving} size="sm">
+              {saving ? "Saving..." : t("admin.save")}
+            </Button>
+            <Button variant="ghost" onClick={() => setDraft(null)} size="sm">
+              {t("admin.cancel")}
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
+      <AdminTableCard
+        icon={Building2}
+        title={t("admin.hospitals")}
+        subtitle={`${rows?.length ?? 0} ${t("fields.entries")}`}
+        action={
+          <div className="relative w-full sm:w-64">
+            <Input
+              id="q"
+              placeholder="Search by name or city..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="pl-10"
+            />
+            <Search className="pointer-events-none absolute left-3.5 top-3.5 h-4 w-4 text-[var(--ink-300)]" />
+          </div>
+        }
+      >
+        {rows === null ? (
+          <Skeleton className="h-40 w-full" />
+        ) : rows.length === 0 ? (
+          <AdminEmpty label={t("admin.noData")} />
+        ) : (
+          <AdminTable
+            head={[t("fields.name"), t("fields.city"), t("fields.phone"), t("fields.rating"), t("fields.actions")]}
+          >
+            {rows.map((row) => (
+              <tr key={row.id} className="transition-colors hover:bg-[var(--cardiac-50)]/40">
+                <td className="px-4 py-3.5">
+                  <div className="font-semibold text-[var(--ink-900)]">{row.name}</div>
+                  <div className="mt-0.5 flex gap-1.5">
+                    {row.emergency24x7 ? <Badge tone="cardiac">24×7</Badge> : null}
+                    {row.hasCathLab ? <Badge tone="amber">{t("fields.cathLab")}</Badge> : null}
+                  </div>
+                </td>
+                <td className="px-4 py-3.5 text-[var(--ink-500)]">{row.city ?? "—"}</td>
+                <td className="px-4 py-3.5 font-mono text-[11px] text-[var(--ink-500)]">{row.phone ?? "—"}</td>
+                <td className="px-4 py-3.5 font-semibold text-amber-600">★ {row.rating.toFixed(1)}</td>
+                <td className="px-4 py-3.5 text-right">
+                  <div className="flex items-center justify-end gap-1.5">
+                    <Button variant="outline" size="sm" onClick={() => setDraft(row)} className="h-8 text-xs">
+                      <Edit className="mr-1 h-3 w-3" />
+                      {t("admin.edit")}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setPendingDeleteId(row.id)}
+                      className="h-8 w-8 p-0 text-[var(--ink-300)] hover:bg-[var(--cardiac-50)] hover:text-[var(--cardiac-600)]"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      <span className="sr-only">{t("admin.delete")}</span>
+                    </Button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </AdminTable>
+        )}
+      </AdminTableCard>
 
       <BulkImportCard
         entity={t("admin.hospitals")}
@@ -281,5 +271,56 @@ export default function AdminHospitalsPage() {
         onDone={load}
       />
     </div>
+  );
+}
+
+function Field({
+  id,
+  label,
+  value,
+  onChange,
+  type = "text",
+  ...rest
+}: {
+  id: string;
+  label: string;
+  value: string | number;
+  onChange: (value: string) => void;
+  type?: string;
+  step?: string;
+  min?: number;
+  max?: number;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <Label htmlFor={id} className="text-xs font-semibold text-[var(--ink-700)]">
+        {label}
+      </Label>
+      <Input
+        id={id}
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="h-10"
+        {...rest}
+      />
+    </div>
+  );
+}
+
+function Toggle({
+  label,
+  checked,
+  onChange,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}) {
+  return (
+    <label className="flex cursor-pointer items-center gap-2.5 text-xs font-medium text-[var(--ink-700)]">
+      <Checkbox checked={checked} onChange={(e) => onChange(e.target.checked)} />
+      <span>{label}</span>
+    </label>
   );
 }

@@ -50,7 +50,7 @@ export default function HospitalMap({
   height?: number;
 }) {
   return (
-    <div style={{ height }} className="overflow-hidden rounded-2xl border border-rose-200/80 shadow-xs">
+    <div style={{ height }} className="overflow-hidden rounded-lg border border-[var(--cardiac-200)]/80">
       <MapContainer
         center={[center.lat, center.lng]}
         zoom={12}

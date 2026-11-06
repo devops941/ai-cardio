@@ -45,4 +45,11 @@ def versions() -> dict:
 
 @router.post("/activate/{version}")
 def activate(version: int) -> dict:
-    return {"active_version": ml_model.activate(version)}
+    primary = ml_model.activate(version)
+    return {"active_version": primary, "active_versions": ml_model.active_versions()}
+
+
+@router.post("/deactivate/{version}")
+def deactivate(version: int) -> dict:
+    primary = ml_model.deactivate(version)  # raises AppError(LAST_ACTIVE_MODEL, 409) if last
+    return {"active_version": primary, "active_versions": ml_model.active_versions()}

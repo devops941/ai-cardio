@@ -3,12 +3,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Search, ShieldCheck, Users } from "lucide-react";
 
+import { AdminPageHeader } from "@/components/admin/admin-page-header";
+import { AdminEmpty, AdminTable, AdminTableCard } from "@/components/admin/admin-table";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiFetch } from "@/lib/api";
 import { t } from "@/lib/i18n";
@@ -52,106 +52,95 @@ export default function AdminUsersPage() {
 
   return (
     <div className="space-y-6">
+      <AdminPageHeader
+        icon={Users}
+        title={t("admin.users")}
+        subtitle="Registered patient accounts, role authorization, and evaluation counts."
+      />
+
       {error ? <Alert tone="error">{error}</Alert> : null}
 
-      <Card className="border-rose-100 shadow-xs">
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-base text-slate-900">
-            <Users className="h-4 w-4 text-rose-600" />
-            {t("admin.users")}
-          </CardTitle>
-          <p className="text-xs text-slate-500">
-            Registered patient accounts, role authorization, and evaluation counts
-          </p>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="relative max-w-sm">
+      <AdminTableCard
+        icon={Users}
+        title={t("admin.users")}
+        subtitle="Search and page through registered accounts"
+        action={
+          <div className="relative w-full sm:w-64">
             <Input
               id="q"
-              placeholder="Search by name or email address..."
+              placeholder="Search name or email..."
               value={query}
               onChange={(e) => {
                 setPage(1);
                 setQuery(e.target.value);
               }}
-              className="pl-9"
+              className="pl-10"
             />
-            <Search className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-slate-400" />
+            <Search className="pointer-events-none absolute left-3.5 top-3.5 h-4 w-4 text-[var(--ink-300)]" />
           </div>
+        }
+      >
+        {data === null ? (
+          <Skeleton className="h-40 w-full" />
+        ) : data.items.length === 0 ? (
+          <AdminEmpty label={t("admin.noData")} />
+        ) : (
+          <div className="space-y-4">
+            <AdminTable head={[t("fields.name"), t("fields.email"), t("fields.role"), t("admin.predictions"), t("fields.joined")]}>
+              {data.items.map((row) => (
+                <tr key={row.id} className="transition-colors hover:bg-[var(--cardiac-50)]/40">
+                  <td className="px-4 py-3.5 font-semibold text-[var(--ink-900)]">{row.name ?? "—"}</td>
+                  <td className="px-4 py-3.5 font-mono text-[11px] text-[var(--ink-500)]">{row.email}</td>
+                  <td className="px-4 py-3.5">
+                    <Badge tone={row.role === "ADMIN" ? "cardiac" : "slate"}>
+                      {row.role === "ADMIN" ? (
+                        <span className="flex items-center gap-1 font-bold text-[var(--cardiac-800)]">
+                          <ShieldCheck className="h-3 w-3" /> ADMIN
+                        </span>
+                      ) : (
+                        row.role
+                      )}
+                    </Badge>
+                  </td>
+                  <td className="px-4 py-3.5 font-semibold text-[var(--ink-900)]">
+                    {row._count.predictions}
+                  </td>
+                  <td className="px-4 py-3.5 text-[var(--ink-500)]">
+                    {new Date(row.createdAt).toLocaleDateString()}
+                  </td>
+                </tr>
+              ))}
+            </AdminTable>
 
-          {data === null ? (
-            <Skeleton className="h-40 w-full rounded-2xl" />
-          ) : data.items.length === 0 ? (
-            <p className="text-xs text-slate-500 text-center py-6">{t("admin.noData")}</p>
-          ) : (
-            <>
-              <div className="overflow-x-auto rounded-xl border border-slate-100">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-50/80 font-semibold text-slate-700 border-b border-slate-100">
-                    <tr>
-                      <th scope="col" className="px-4 py-3">{t("fields.name")}</th>
-                      <th scope="col" className="px-4 py-3">{t("fields.email")}</th>
-                      <th scope="col" className="px-4 py-3">{t("fields.role")}</th>
-                      <th scope="col" className="px-4 py-3">{t("admin.predictions")}</th>
-                      <th scope="col" className="px-4 py-3">{t("fields.joined")}</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 text-slate-700">
-                    {data.items.map((row) => (
-                      <tr key={row.id} className="hover:bg-slate-50/40">
-                        <td className="px-4 py-3 font-semibold text-slate-900">{row.name ?? "—"}</td>
-                        <td className="px-4 py-3 font-mono text-[11px] text-slate-600">{row.email}</td>
-                        <td className="px-4 py-3">
-                          <Badge tone={row.role === "ADMIN" ? "rose" : "slate"}>
-                            {row.role === "ADMIN" ? (
-                              <span className="flex items-center gap-1 font-bold text-rose-800">
-                                <ShieldCheck className="h-3 w-3" /> ADMIN
-                              </span>
-                            ) : (
-                              row.role
-                            )}
-                          </Badge>
-                        </td>
-                        <td className="px-4 py-3 font-medium text-slate-800">{row._count.predictions}</td>
-                        <td className="px-4 py-3 text-slate-500">
-                          {new Date(row.createdAt).toLocaleDateString()}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+            <div className="flex items-center justify-between text-xs text-[var(--ink-500)]">
+              <span>
+                {t("fields.page")} {data.page} {t("fields.of")} {data.totalPages} · {data.total}{" "}
+                {t("fields.total")}
+              </span>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={page <= 1}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                >
+                  <ChevronLeft className="mr-1 h-3.5 w-3.5" />
+                  {t("fields.previous")}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={page >= data.totalPages}
+                  onClick={() => setPage((p) => p + 1)}
+                >
+                  {t("fields.next")}
+                  <ChevronRight className="ml-1 h-3.5 w-3.5" />
+                </Button>
               </div>
-              <div className="flex items-center justify-between text-xs text-slate-600 pt-1">
-                <span>
-                  {t("fields.page")} {data.page} {t("fields.of")} {data.totalPages} · {data.total} {t("fields.total")}
-                </span>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={page <= 1}
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    className="h-8 rounded-xl"
-                  >
-                    <ChevronLeft className="h-3.5 w-3.5 mr-1" />
-                    {t("fields.previous")}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={page >= data.totalPages}
-                    onClick={() => setPage((p) => p + 1)}
-                    className="h-8 rounded-xl"
-                  >
-                    {t("fields.next")}
-                    <ChevronRight className="h-3.5 w-3.5 ml-1" />
-                  </Button>
-                </div>
-              </div>
-            </>
-          )}
-        </CardContent>
-      </Card>
+            </div>
+          </div>
+        )}
+      </AdminTableCard>
     </div>
   );
 }

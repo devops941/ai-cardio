@@ -92,7 +92,23 @@ def test_insufficient_knowledge_when_empty_store(client):
     payload = {"symptoms": ["palpitations"], "symptom_labels": ["Palpitations"]}
     resp = client.post("/predict/symptoms", json=payload, headers=auth())
     assert resp.status_code == 200
-    assert resp.json()["status"] == "insufficient_knowledge"
+    body = resp.json()
+    assert body["status"] == "insufficient_knowledge"
+    # The deterministic questionnaire baseline still yields a band.
+    assert body["risk_level"] in {"Low", "Moderate", "High"}
+
+
+def test_insufficient_knowledge_keeps_a_high_band_for_severe_symptoms(client):
+    payload = {
+        "symptoms": ["chest_pain", "pain_spreading"],
+        "symptom_labels": ["Chest pain", "Pain spreading"],
+        "severity": 7,
+    }
+    resp = client.post("/predict/symptoms", json=payload, headers=auth())
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["status"] == "insufficient_knowledge"
+    assert body["risk_level"] == "High"
 
 
 def test_non_heart_text(client):
@@ -130,7 +146,9 @@ def test_llm_unavailable_fallback(client, monkeypatch):
     }
     resp = client.post("/predict/symptoms", json=payload, headers=auth())
     assert resp.status_code == 200
-    assert resp.json()["status"] == "llm_unavailable"
+    body = resp.json()
+    assert body["status"] == "llm_unavailable"
+    assert body["risk_level"] in {"Low", "Moderate", "High"}
 
 
 def test_llm_bad_json_fallback(client, monkeypatch):
@@ -157,7 +175,9 @@ def test_llm_bad_json_fallback(client, monkeypatch):
     }
     resp = client.post("/predict/symptoms", json=payload, headers=auth())
     assert resp.status_code == 200
-    assert resp.json()["status"] == "llm_unavailable"
+    body = resp.json()
+    assert body["status"] == "llm_unavailable"
+    assert body["risk_level"] in {"Low", "Moderate", "High"}
 
 
 def test_delete_document(client):

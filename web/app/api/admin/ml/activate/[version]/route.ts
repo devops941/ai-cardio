@@ -36,16 +36,10 @@ export async function POST(_request: NextRequest, { params }: Params) {
       throw err;
     }
 
-    await prisma.$transaction([
-      prisma.mlModelVersion.updateMany({
-        where: { isActive: true },
-        data: { isActive: false },
-      }),
-      prisma.mlModelVersion.update({
-        where: { id: record.id },
-        data: { isActive: true },
-      }),
-    ]);
+    await prisma.mlModelVersion.update({
+      where: { id: record.id },
+      data: { isActive: true },
+    });
 
     await prisma.auditLog.create({
       data: {
@@ -57,7 +51,14 @@ export async function POST(_request: NextRequest, { params }: Params) {
       },
     });
 
-    return NextResponse.json({ activeVersion: parsedVersion });
+    const activeRecords = await prisma.mlModelVersion.findMany({
+      where: { isActive: true },
+      select: { version: true },
+      orderBy: { version: "asc" },
+    });
+    const activeVersions = activeRecords.map((r) => r.version);
+
+    return NextResponse.json({ activeVersions });
   } catch (err) {
     return jsonError(err);
   }

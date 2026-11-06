@@ -4,30 +4,22 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import {
   Activity,
-  AlertCircle,
-  AlertTriangle,
   ArrowLeft,
   ArrowRight,
   Check,
   CheckCircle2,
-  Clock,
   Compass,
-  FileText,
   Heart,
   HeartPulse,
-  Info,
   MapPin,
-  ShieldAlert,
   ShieldCheck,
-  Sparkles,
   Stethoscope,
   User,
-  Zap,
 } from "lucide-react";
 
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -88,10 +80,10 @@ const EMPTY: FormState = {
 };
 
 const STEP_INFO = [
-  { key: "check.step1", label: "Symptoms", icon: HeartPulse },
-  { key: "check.step2", label: "Profile", icon: User },
-  { key: "check.step3", label: "Clinical Labs", icon: Activity },
-  { key: "check.step4", label: "Location & Consent", icon: MapPin },
+  { label: "Symptoms", icon: HeartPulse },
+  { label: "Profile", icon: User },
+  { label: "Clinical Labs", icon: Activity },
+  { label: "Location & Consent", icon: MapPin },
 ];
 
 const PROGRESS_KEYS = [
@@ -100,6 +92,12 @@ const PROGRESS_KEYS = [
   "Retrieving grounded cardiology context from ChromaDB...",
   "Ranking nearby emergency cardiac hospital centers...",
 ];
+
+const SEVERITY_TONE = (value: number) => {
+  if (value <= 3) return { label: "Mild", text: "text-emerald-700", bar: "from-emerald-400 to-emerald-600" };
+  if (value <= 6) return { label: "Moderate", text: "text-amber-700", bar: "from-amber-400 to-amber-600" };
+  return { label: "Severe", text: "text-[var(--cardiac-700)]", bar: "from-[var(--cardiac-500)] to-[var(--cardiac-700)]" };
+};
 
 export function CheckWizard() {
   const router = useRouter();
@@ -141,7 +139,8 @@ export function CheckWizard() {
 
   const stepValid = useMemo(() => {
     if (step === 0) return form.symptoms.length > 0 || form.freeText.trim().length > 0;
-    if (step === 1) return form.age !== "" && Number(form.age) >= 1 && Number(form.age) <= 120 && form.gender !== "";
+    if (step === 1)
+      return form.age !== "" && Number(form.age) >= 1 && Number(form.age) <= 120 && form.gender !== "";
     if (step === 2) {
       if (!form.useClinical) return true;
       return CLINICAL_FIELDS.every((field) => {
@@ -220,29 +219,29 @@ export function CheckWizard() {
     }
   }
 
-  // Animated Cardiac Assessment Loading State
+  // ---- Loading state ----
   if (submitting) {
     return (
-      <Card className="max-w-xl mx-auto border-rose-200 shadow-2xl overflow-hidden">
-        <div className="h-2 w-full bg-slate-100 overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-rose-500 via-red-500 to-rose-600 animate-pulse transition-all duration-500 w-full" />
+      <Card className="mx-auto max-w-xl overflow-hidden">
+        <div className="h-1.5 w-full bg-[var(--cardiac-100)]">
+          <div className="shimmer-bar h-full w-full" />
         </div>
-        <CardContent className="space-y-6 py-12 px-6 text-center" aria-live="polite">
-          <div className="relative mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-rose-50 shadow-inner">
-            <Heart aria-hidden className="h-10 w-10 text-rose-600 animate-heartbeat fill-rose-600/20" />
-            <div className="absolute inset-0 rounded-3xl border-2 border-rose-400/40 animate-ping pointer-events-none" />
+        <CardContent className="space-y-6 px-6 py-12 text-center" aria-live="polite">
+          <div className="relative mx-auto flex h-24 w-24 items-center justify-center rounded-lg bg-[var(--cardiac-50)]">
+            <span className="absolute inset-0 rounded-lg border-2 border-[var(--cardiac-400)]/40 animate-ring-ping" />
+            <Heart aria-hidden className="h-11 w-11 animate-heartbeat fill-[var(--cardiac-600)]/20 text-[var(--cardiac-600)]" />
           </div>
 
           <div className="space-y-2">
-            <h3 className="text-xl font-black text-slate-900 tracking-tight">
+            <h3 className="text-xl font-black tracking-tight text-[var(--ink-900)]">
               Analyzing Cardiovascular Biomarkers
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-[var(--ink-500)]">
               Running multi-layer guardrails, ML inference, and hospital geo-ranking
             </p>
           </div>
 
-          <div className="space-y-3 text-left max-w-md mx-auto pt-4 border-t border-rose-100">
+          <div className="mx-auto max-w-md space-y-3 border-t border-[var(--cardiac-100)] pt-6 text-left">
             {PROGRESS_KEYS.map((message, index) => {
               const isPast = index < progressIndex;
               const isCurrent = index === progressIndex;
@@ -250,21 +249,21 @@ export function CheckWizard() {
                 <div
                   key={message}
                   className={cn(
-                    "flex items-center gap-3 rounded-xl p-3 text-xs font-semibold transition-all duration-300",
+                    "flex items-center gap-3 rounded-md p-3 text-xs font-semibold transition-all duration-300",
                     isCurrent
-                      ? "bg-rose-50 text-rose-900 border border-rose-200/80 shadow-xs"
+                      ? "border border-[var(--cardiac-200)] bg-[var(--cardiac-50)] text-[var(--cardiac-900)]"
                       : isPast
                         ? "text-emerald-800"
-                        : "text-slate-400 opacity-60",
+                        : "text-[var(--ink-300)] opacity-60",
                   )}
                 >
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px]">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center">
                     {isPast ? (
                       <CheckCircle2 className="h-4 w-4 text-emerald-600" />
                     ) : isCurrent ? (
-                      <span className="h-2 w-2 rounded-full bg-rose-600 animate-ping" />
+                      <span className="h-2.5 w-2.5 rounded-full bg-[var(--cardiac-600)] animate-ping" />
                     ) : (
-                      "•"
+                      <span className="h-1.5 w-1.5 rounded-full bg-[var(--ink-300)]" />
                     )}
                   </span>
                   <span className="leading-snug">{message}</span>
@@ -278,59 +277,61 @@ export function CheckWizard() {
   }
 
   const progressPercent = ((step + 1) / STEP_INFO.length) * 100;
+  const severityTone = SEVERITY_TONE(form.severity);
 
   return (
-    <Card className="max-w-3xl mx-auto border-rose-100/90 shadow-xl overflow-hidden">
-      {/* Top Animated Gradient Header */}
-      <div className="bg-gradient-to-r from-rose-600 via-red-600 to-rose-700 p-6 text-white">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 backdrop-blur-md">
-              <HeartPulse className="h-6 w-6 text-white animate-heartbeat" />
+    <Card className="mx-auto max-w-4xl overflow-hidden">
+      {/* Header */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-[var(--cardiac-700)] via-[var(--cardiac-600)] to-[var(--cardiac-800)] p-6 text-white sm:p-8">
+        <div className="relative flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <span className="flex h-12 w-12 items-center justify-center rounded-md bg-white/15">
+              <HeartPulse className="h-6 w-6 animate-heartbeat text-white" />
             </span>
             <div>
               <h1 className="text-lg font-black tracking-tight sm:text-xl">
-                Heart Symptom & Risk Assessment
+                Heart Symptom &amp; Risk Assessment
               </h1>
-              <p className="text-xs text-rose-100 mt-0.5">
-                Step {step + 1} of 4: {STEP_INFO[step].label}
+              <p className="mt-0.5 text-xs text-[var(--cardiac-100)]">
+                Step {step + 1} of {STEP_INFO.length}: {STEP_INFO[step].label}
               </p>
             </div>
           </div>
-          <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-bold backdrop-blur-md">
-            {progressPercent.toFixed(0)}% Completed
+          <span className="rounded-full bg-white/15 px-3.5 py-1.5 text-xs font-bold">
+            {progressPercent.toFixed(0)}% complete
           </span>
         </div>
 
-        {/* Progress Tracker Bar */}
-        <div className="mt-5 h-2 w-full rounded-full bg-black/20 overflow-hidden">
+        <div className="relative mt-6 h-2 w-full overflow-hidden rounded-full bg-black/20">
           <div
-            className="h-full bg-white rounded-full transition-all duration-300"
+            className="h-full rounded-full bg-gradient-to-r from-white to-[var(--cardiac-100)] transition-all duration-500"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
 
-        {/* Step Indicator Pills */}
-        <div className="mt-4 grid grid-cols-4 gap-2 text-center text-[11px] font-semibold">
+        <div className="relative mt-4 grid grid-cols-4 gap-2 text-center text-[11px] font-semibold">
           {STEP_INFO.map((item, index) => {
             const Icon = item.icon;
             const active = index === step;
             const done = index < step;
             return (
-              <div
-                key={item.key}
+              <button
+                key={item.label}
+                type="button"
+                onClick={() => (index < step ? setStep(index) : undefined)}
+                disabled={index > step}
                 className={cn(
-                  "flex items-center justify-center gap-1.5 rounded-lg py-1.5 transition-colors",
+                  "flex items-center justify-center gap-1.5 rounded-md py-2 transition-all",
                   active
-                    ? "bg-white text-rose-800 font-bold shadow-xs"
+                    ? "bg-white font-bold text-[var(--cardiac-800)] shadow-sm"
                     : done
-                      ? "bg-white/20 text-white"
-                      : "text-white/60",
+                      ? "cursor-pointer bg-white/20 text-white hover:bg-white/30"
+                      : "text-white/50",
                 )}
               >
-                <Icon className="h-3.5 w-3.5 hidden sm:inline" />
+                {done ? <Check className="h-3.5 w-3.5" /> : <Icon className="hidden h-3.5 w-3.5 sm:inline" />}
                 <span>{item.label}</span>
-              </div>
+              </button>
             );
           })}
         </div>
@@ -339,19 +340,18 @@ export function CheckWizard() {
       <CardContent className="space-y-8 p-6 sm:p-8">
         {error ? <Alert tone="error">{error}</Alert> : null}
 
-        {/* STEP 1: SYMPTOMS & SEVERITY */}
+        {/* STEP 1 — Symptoms */}
         {step === 0 ? (
           <div className="space-y-6">
             <div>
-              <Label className="text-base font-bold text-slate-900 block">
-                Select Any Heart-Related Symptoms Experienced
+              <Label className="block text-base font-bold text-[var(--ink-900)]">
+                Select any heart-related symptoms you are experiencing
               </Label>
-              <p className="text-xs text-slate-500 mt-1">
-                Choose all that apply. Select at least one symptom or describe your concern below.
+              <p className="mt-1 text-xs text-[var(--ink-500)]">
+                Choose all that apply, or describe your concern in the text box below.
               </p>
             </div>
 
-            {/* Visual Interactive Symptom Cards */}
             <div className="grid gap-3 sm:grid-cols-2">
               {SYMPTOM_IDS.map((id) => {
                 const selected = form.symptoms.includes(id);
@@ -360,43 +360,46 @@ export function CheckWizard() {
                     key={id}
                     type="button"
                     onClick={() => toggle("symptoms", id)}
+                    aria-pressed={selected}
                     className={cn(
-                      "flex items-start gap-3 rounded-2xl border p-3.5 text-left transition-all duration-150 cursor-pointer",
+                      "flex cursor-pointer items-start gap-3 rounded-md border p-3.5 text-left transition-colors duration-150",
                       selected
-                        ? "border-rose-500 bg-rose-50/80 shadow-sm shadow-rose-500/10"
-                        : "border-slate-200 bg-white hover:border-rose-200 hover:bg-slate-50/60",
+                        ? "border-[var(--cardiac-500)] bg-[var(--cardiac-50)]"
+                        : "border-[var(--ink-100)] bg-white hover:border-[var(--cardiac-300)] hover:bg-[var(--cardiac-50)]/40",
                     )}
                   >
                     <span
                       className={cn(
-                        "flex h-5 w-5 shrink-0 items-center justify-center rounded-md border text-xs font-bold mt-0.5 transition-colors",
+                        "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border text-xs font-bold transition-colors",
                         selected
-                          ? "border-rose-600 bg-rose-600 text-white"
-                          : "border-slate-300 bg-white",
+                          ? "border-[var(--cardiac-600)] bg-[var(--cardiac-600)] text-white"
+                          : "border-[var(--ink-300)] bg-white",
                       )}
                     >
                       {selected ? <Check className="h-3.5 w-3.5" /> : null}
                     </span>
-                    <div>
-                      <p className={cn("text-sm font-semibold", selected ? "text-rose-950 font-bold" : "text-slate-800")}>
-                        {SYMPTOMS[id]}
-                      </p>
-                    </div>
+                    <span
+                      className={cn(
+                        "text-sm",
+                        selected ? "font-bold text-[var(--cardiac-900)]" : "font-medium text-[var(--ink-700)]",
+                      )}
+                    >
+                      {SYMPTOMS[id]}
+                    </span>
                   </button>
                 );
               })}
             </div>
 
-            {/* Duration Selector */}
-            <div className="space-y-2 pt-2 border-t border-slate-100">
-              <Label htmlFor="duration" className="font-semibold text-slate-900">
-                Duration of Current Episodes
+            <div className="space-y-2 border-t border-[var(--cardiac-100)] pt-4">
+              <Label htmlFor="duration" className="font-bold text-[var(--ink-900)]">
+                Duration of current episodes
               </Label>
               <Select
                 id="duration"
                 value={form.durationId}
                 onChange={(e) => update("durationId", e.target.value)}
-                className="h-11 rounded-xl"
+                className="h-11"
               >
                 <option value="">Select duration...</option>
                 {DURATION_IDS.map((id) => (
@@ -407,35 +410,24 @@ export function CheckWizard() {
               </Select>
             </div>
 
-            {/* Sudden Onset Checkbox */}
-            <div className="flex items-center gap-3 rounded-xl border border-slate-200 p-3.5 bg-slate-50/60">
+            <div className="flex items-center gap-3 rounded-md border border-[var(--ink-100)] bg-[var(--cardiac-50)]/40 p-4">
               <Checkbox
                 id="sudden"
                 checked={form.sudden}
                 onChange={(e) => update("sudden", e.target.checked)}
               />
-              <Label htmlFor="sudden" className="text-sm font-medium text-slate-800 cursor-pointer">
-                <strong>Sudden acute onset:</strong> Symptoms began rapidly without gradual buildup
+              <Label htmlFor="sudden" className="cursor-pointer text-sm font-medium text-[var(--ink-700)]">
+                <strong>Sudden acute onset:</strong> symptoms began rapidly without gradual buildup
               </Label>
             </div>
 
-            {/* Severity Rating Slider with Dynamic Colors */}
-            <div className="space-y-3 rounded-2xl border border-rose-100 bg-rose-50/40 p-4">
+            <div className="space-y-3 rounded-md border border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/40 p-5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="severity" className="font-bold text-slate-900">
-                  Pain / Discomfort Intensity (1 to 10)
+                <Label htmlFor="severity" className="font-bold text-[var(--ink-900)]">
+                  Severity of symptoms
                 </Label>
-                <span
-                  className={cn(
-                    "rounded-full px-3 py-0.5 text-xs font-bold",
-                    form.severity >= 7
-                      ? "bg-red-600 text-white animate-pulse"
-                      : form.severity >= 4
-                        ? "bg-amber-100 text-amber-900"
-                        : "bg-emerald-100 text-emerald-900",
-                  )}
-                >
-                  Score: {form.severity} / 10 ({form.severity >= 7 ? "Severe" : form.severity >= 4 ? "Moderate" : "Mild"})
+                <span className={cn("text-sm font-black", severityTone.text)}>
+                  {form.severity}/10 · {severityTone.label}
                 </span>
               </div>
               <input
@@ -443,49 +435,56 @@ export function CheckWizard() {
                 type="range"
                 min={1}
                 max={10}
+                step={1}
                 value={form.severity}
                 onChange={(e) => update("severity", Number(e.target.value))}
-                className="h-2 w-full accent-rose-600 cursor-pointer"
+                className="h-2 w-full cursor-pointer appearance-none rounded-full bg-[var(--cardiac-100)] accent-[var(--cardiac-600)]"
               />
-              <div className="flex justify-between text-[11px] text-slate-500 font-medium px-1">
-                <span>1 (Mild discomfort)</span>
-                <span>5 (Noticeable ache)</span>
-                <span>10 (Unbearable / Severe)</span>
+              <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--cardiac-100)]">
+                <div
+                  className={cn("h-full rounded-full bg-gradient-to-r transition-all duration-300", severityTone.bar)}
+                  style={{ width: `${form.severity * 10}%` }}
+                />
+              </div>
+              <div className="flex justify-between text-[10px] font-semibold text-[var(--ink-300)]">
+                <span>Mild</span>
+                <span>Moderate</span>
+                <span>Severe</span>
               </div>
             </div>
 
-            {/* Free text input */}
             <div className="space-y-2">
-              <Label htmlFor="freeText" className="font-semibold text-slate-900">
-                Additional Details (Optional)
+              <Label htmlFor="freeText" className="font-bold text-[var(--ink-900)]">
+                {t("check.freeTextLabel")}
               </Label>
               <Textarea
                 id="freeText"
                 rows={3}
                 maxLength={1000}
-                placeholder="Describe feelings (e.g. pressure on chest, radiating to left arm or neck, dizziness when standing)..."
+                placeholder="Describe your symptoms in your own words — location, triggers, what makes it better or worse..."
                 value={form.freeText}
                 onChange={(e) => update("freeText", e.target.value)}
-                className="rounded-xl border-slate-300 focus:border-rose-500"
               />
             </div>
           </div>
         ) : null}
 
-        {/* STEP 2: PROFILE & RISK FACTORS */}
+        {/* STEP 2 — Profile */}
         {step === 1 ? (
           <div className="space-y-6">
             <div>
-              <h3 className="text-base font-bold text-slate-900">Patient Health Profile</h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Demographics and medical history help calibrate risk models.
+              <h3 className="text-base font-bold text-[var(--ink-900)]">
+                Tell us about yourself
+              </h3>
+              <p className="mt-0.5 text-xs text-[var(--ink-500)]">
+                Age and gender are core inputs to cardiovascular risk stratification.
               </p>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-1.5">
-                <Label htmlFor="age" className="font-semibold text-slate-900">
-                  Age (Years) <span className="text-rose-600">*</span>
+              <div className="space-y-2">
+                <Label htmlFor="age" className="font-semibold text-[var(--ink-900)]">
+                  {t("check.age")}
                 </Label>
                 <Input
                   id="age"
@@ -495,19 +494,16 @@ export function CheckWizard() {
                   placeholder="e.g. 45"
                   value={form.age}
                   onChange={(e) => update("age", e.target.value)}
-                  className="rounded-xl h-11"
                 />
               </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="gender" className="font-semibold text-slate-900">
-                  Biological Gender <span className="text-rose-600">*</span>
+              <div className="space-y-2">
+                <Label htmlFor="gender" className="font-semibold text-[var(--ink-900)]">
+                  {t("check.gender")}
                 </Label>
                 <Select
                   id="gender"
                   value={form.gender}
                   onChange={(e) => update("gender", e.target.value as Gender)}
-                  className="rounded-xl h-11"
                 >
                   <option value="">Select gender...</option>
                   <option value="male">{t("check.male")}</option>
@@ -517,10 +513,9 @@ export function CheckWizard() {
               </div>
             </div>
 
-            {/* Risk factors checklist */}
-            <div className="space-y-3 pt-2 border-t border-slate-100">
-              <Label className="font-bold text-slate-900 block">
-                Pre-existing Cardiovascular Risk Factors
+            <div className="space-y-3 border-t border-[var(--cardiac-100)] pt-4">
+              <Label className="block font-bold text-[var(--ink-900)]">
+                Pre-existing cardiovascular risk factors
               </Label>
               <div className="grid gap-2.5 sm:grid-cols-2">
                 {RISK_FACTOR_IDS.map((id) => {
@@ -530,17 +525,18 @@ export function CheckWizard() {
                       key={id}
                       type="button"
                       onClick={() => toggle("riskFactors", id)}
+                      aria-pressed={selected}
                       className={cn(
-                        "flex items-center gap-3 rounded-xl border p-3 text-left transition-colors cursor-pointer",
+                        "flex cursor-pointer items-center gap-3 rounded-md border p-3.5 text-left transition-colors duration-150",
                         selected
-                          ? "border-rose-400 bg-rose-50 text-rose-950 font-bold"
-                          : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+                          ? "border-[var(--cardiac-400)] bg-[var(--cardiac-50)] font-bold text-[var(--cardiac-900)]"
+                          : "border-[var(--ink-100)] bg-white text-[var(--ink-700)] hover:border-[var(--cardiac-200)] hover:bg-[var(--cardiac-50)]/40",
                       )}
                     >
                       <span
                         className={cn(
-                          "flex h-4 w-4 shrink-0 items-center justify-center rounded border text-xs",
-                          selected ? "border-rose-600 bg-rose-600 text-white" : "border-slate-300",
+                          "flex h-5 w-5 shrink-0 items-center justify-center rounded border text-xs",
+                          selected ? "border-[var(--cardiac-600)] bg-[var(--cardiac-600)] text-white" : "border-[var(--ink-300)]",
                         )}
                       >
                         {selected ? <Check className="h-3 w-3" /> : null}
@@ -554,46 +550,50 @@ export function CheckWizard() {
           </div>
         ) : null}
 
-        {/* STEP 3: CLINICAL LABS (OPTIONAL CLEVELAND DATA) */}
+        {/* STEP 3 — Clinical labs */}
         {step === 2 ? (
           <div className="space-y-6">
-            <div className="rounded-2xl border border-rose-100 bg-rose-50/50 p-5 space-y-3">
-              <div className="flex items-start gap-3">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-rose-100 text-rose-700">
+            <div className="space-y-3 rounded-md border border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/50 p-5">
+              <div className="flex items-start gap-3.5">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-[var(--cardiac-100)] text-[var(--cardiac-700)]">
                   <Activity className="h-5 w-5" />
                 </span>
                 <div>
-                  <h3 className="text-base font-bold text-slate-900">
-                    Cleveland Clinical Lab Values (Optional)
+                  <h3 className="text-base font-bold text-[var(--ink-900)]">
+                    Cleveland clinical lab values (optional)
                   </h3>
-                  <p className="text-xs text-slate-600 mt-1 leading-relaxed">
-                    {t("check.clinicalIntro")} If you have recent blood work or an ECG report, enter the 13 clinical biomarkers to enable the Random Forest predictive model.
+                  <p className="mt-1 text-xs leading-relaxed text-[var(--ink-500)]">
+                    {t("check.clinicalIntro")} If you have recent blood work or an ECG report, enter
+                    the 13 clinical biomarkers to enable the Random Forest predictive model.
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 pt-2">
+              <div className="flex items-center gap-3 border-t border-[var(--cardiac-200)]/60 pt-4">
                 <Checkbox
                   id="useClinical"
                   checked={form.useClinical}
                   onChange={(e) => update("useClinical", e.target.checked)}
                 />
-                <Label htmlFor="useClinical" className="font-bold text-slate-900 text-sm cursor-pointer">
+                <Label htmlFor="useClinical" className="cursor-pointer text-sm font-bold text-[var(--ink-900)]">
                   Yes, I want to enter my 13 clinical test values
                 </Label>
               </div>
             </div>
 
             {form.useClinical ? (
-              <div className="grid gap-4 sm:grid-cols-2 pt-2">
+              <div className="grid gap-4 pt-2 sm:grid-cols-2">
                 {CLINICAL_FIELDS.map((field) => (
-                  <div key={field.name} className="space-y-1.5 rounded-xl border border-slate-200 p-3.5 bg-white">
-                    <div className="flex justify-between items-center">
-                      <Label htmlFor={`clinical-${field.name}`} className="font-semibold text-xs text-slate-900">
+                  <div
+                    key={field.name}
+                    className="space-y-2 rounded-md border border-[var(--ink-100)] bg-white p-4"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <Label htmlFor={`clinical-${field.name}`} className="text-xs font-semibold text-[var(--ink-900)]">
                         {field.label}
                       </Label>
-                      <span className="text-[10px] font-bold text-rose-600">
-                        Range: {field.min}–{field.max}
+                      <span className="shrink-0 rounded-full bg-[var(--cardiac-50)] px-2 py-0.5 text-[10px] font-bold text-[var(--cardiac-600)]">
+                        {field.min}–{field.max}
                       </span>
                     </div>
                     <Input
@@ -607,62 +607,68 @@ export function CheckWizard() {
                       onChange={(e) =>
                         update("clinical", { ...form.clinical, [field.name]: e.target.value })
                       }
-                      className="rounded-lg h-9 text-sm"
+                      className="h-10"
                     />
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="rounded-2xl border border-dashed border-slate-300 p-8 text-center text-slate-500 space-y-2">
-                <Stethoscope className="h-8 w-8 mx-auto text-slate-400" />
-                <p className="text-sm font-semibold text-slate-700">No lab reports handy right now?</p>
-                <p className="text-xs text-slate-500 max-w-md mx-auto">
-                  You can safely skip this step. Our multi-layer RAG and rule-based emergency triage will screen your symptoms without requiring lab values.
+              <div className="space-y-2 rounded-md border border-dashed border-[var(--cardiac-200)] bg-[var(--cardiac-50)]/30 p-10 text-center">
+                <Stethoscope className="mx-auto h-9 w-9 text-[var(--cardiac-400)]" />
+                <p className="text-sm font-bold text-[var(--ink-900)]">
+                  No lab reports handy right now?
+                </p>
+                <p className="mx-auto max-w-md text-xs leading-relaxed text-[var(--ink-500)]">
+                  You can safely skip this step. Our multi-layer RAG and rule-based emergency triage
+                  will screen your symptoms without requiring lab values.
                 </p>
               </div>
             )}
           </div>
         ) : null}
 
-        {/* STEP 4: LOCATION & FINAL CONSENT */}
+        {/* STEP 4 — Location & consent */}
         {step === 3 ? (
           <div className="space-y-6">
             <div>
-              <h3 className="text-base font-bold text-slate-900">Hospital Discovery & Location</h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                We locate 24x7 cardiac centers with Cath Labs within 25 km of your position.
+              <h3 className="text-base font-bold text-[var(--ink-900)]">
+                Hospital discovery &amp; location
+              </h3>
+              <p className="mt-0.5 text-xs text-[var(--ink-500)]">
+                We locate 24×7 cardiac centers with cath labs within 25 km of your position.
               </p>
             </div>
 
-            {/* GPS Share Button with Radar Animation */}
-            <div className="rounded-2xl border border-rose-200 bg-rose-50/40 p-4 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-[var(--cardiac-200)] bg-[var(--cardiac-50)]/40 p-4">
               <div className="flex items-center gap-3">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-600 text-white shadow-sm">
-                  <Compass className="h-5 w-5 animate-spin" style={{ animationDuration: "12s" }} />
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-[var(--cardiac-600)] to-[var(--cardiac-800)] text-white">
+                  <Compass className="h-5 w-5 animate-spin-slow" />
                 </span>
                 <div>
-                  <p className="text-sm font-bold text-slate-900">GPS Device Geolocation</p>
-                  <p className="text-xs text-slate-600">Accurate distance calculation to emergency centers</p>
+                  <p className="text-sm font-bold text-[var(--ink-900)]">GPS device geolocation</p>
+                  <p className="text-xs text-[var(--ink-500)]">
+                    Accurate distance to emergency centers
+                  </p>
                 </div>
               </div>
-              <Button type="button" variant="outline" onClick={shareLocation} className="border-rose-300">
-                <MapPin className="h-4 w-4 text-rose-600 mr-1" />
-                <span>Share Current GPS</span>
+              <Button type="button" variant="outline" onClick={shareLocation}>
+                <MapPin className="mr-1 h-4 w-4 text-[var(--cardiac-600)]" />
+                Share current GPS
               </Button>
             </div>
 
             {form.mode === "geo" && form.lat != null ? (
-              <Alert tone="info">
-                ✓ Precise coordinates detected ({form.lat.toFixed(3)}, {form.lng?.toFixed(3)}). Nearest hospitals will be ranked by distance.
+              <Alert tone="success">
+                Precise coordinates detected ({form.lat.toFixed(3)}, {form.lng?.toFixed(3)}). Nearest
+                hospitals will be ranked by distance.
               </Alert>
             ) : null}
 
             {locationNote ? <Alert tone="warning">{locationNote}</Alert> : null}
 
-            {/* Manual City / Pincode Fallback */}
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-1.5">
-                <Label htmlFor="city" className="font-semibold text-slate-900">
+              <div className="space-y-2">
+                <Label htmlFor="city" className="font-semibold text-[var(--ink-900)]">
                   City (e.g. New Delhi, Mumbai)
                 </Label>
                 <Input
@@ -670,85 +676,74 @@ export function CheckWizard() {
                   placeholder="Enter city"
                   value={form.city}
                   onChange={(e) => update("city", e.target.value)}
-                  className="rounded-xl h-11"
                 />
               </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="pincode" className="font-semibold text-slate-900">
-                  Pincode (Postal Code)
+              <div className="space-y-2">
+                <Label htmlFor="pincode" className="font-semibold text-[var(--ink-900)]">
+                  Pincode (postal code)
                 </Label>
                 <Input
                   id="pincode"
                   placeholder="e.g. 110001"
                   value={form.pincode}
                   onChange={(e) => update("pincode", e.target.value)}
-                  className="rounded-xl h-11"
                 />
               </div>
             </div>
 
-            {/* Consent Checkbox */}
-            <div className="rounded-2xl border border-rose-200 bg-white p-4 space-y-3">
+            <div className="space-y-3 rounded-md border border-[var(--cardiac-200)] bg-white p-5">
               <div className="flex items-start gap-3">
                 <Checkbox
                   id="consent"
                   checked={form.consent}
                   onChange={(e) => update("consent", e.target.checked)}
                 />
-                <Label htmlFor="consent" className="text-xs font-semibold text-slate-800 leading-relaxed cursor-pointer">
-                  I understand that CardioCare AI is an educational screening aid, not a certified medical diagnosis. I agree to consult a qualified physician for any cardiac condition.
+                <Label
+                  htmlFor="consent"
+                  className="cursor-pointer text-xs font-semibold leading-relaxed text-[var(--ink-700)]"
+                >
+                  I understand that CardioCare AI is an educational screening aid, not a certified
+                  medical diagnosis. I agree to consult a qualified physician for any cardiac
+                  condition.
                 </Label>
               </div>
 
-              <div className="rounded-xl bg-slate-50 p-3 text-[11px] text-slate-500 border border-slate-100 flex items-start gap-2">
-                <ShieldCheck className="h-4 w-4 shrink-0 text-emerald-600 mt-0.5" />
-                <span>{DISCLAIMER}</span>
+              <div className="flex items-start gap-2 rounded-md border border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/50 p-3.5 text-[11px] text-[var(--ink-500)]">
+                <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+                <span className="leading-relaxed">{DISCLAIMER}</span>
               </div>
             </div>
           </div>
         ) : null}
 
-        {/* Step Navigation Controls */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-100">
+        {/* Navigation */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--cardiac-100)] pt-5">
           <Button
             type="button"
             variant="outline"
             onClick={() => setStep((s) => Math.max(0, s - 1))}
             disabled={step === 0}
-            className="rounded-xl"
           >
-            <ArrowLeft className="h-4 w-4 mr-1" />
-            <span>{t("check.back")}</span>
+            <ArrowLeft className="mr-1 h-4 w-4" />
+            {t("check.back")}
           </Button>
 
           <div className="flex gap-3">
             {step === 2 && !form.useClinical ? (
               <Button type="button" variant="ghost" onClick={() => setStep(3)}>
-                Skip Lab Data
+                Skip lab data
               </Button>
             ) : null}
 
             {step < 3 ? (
-              <Button
-                type="button"
-                onClick={() => setStep((s) => s + 1)}
-                disabled={!stepValid}
-                className="rounded-xl"
-              >
-                <span>{t("check.next")}</span>
-                <ArrowRight className="h-4 w-4 ml-1" />
+              <Button type="button" onClick={() => setStep((s) => s + 1)} disabled={!stepValid}>
+                {t("check.next")}
+                <ArrowRight className="ml-1 h-4 w-4" />
               </Button>
             ) : (
-              <Button
-                type="button"
-                variant="cardiac"
-                onClick={submit}
-                disabled={!stepValid}
-                className="rounded-xl px-8"
-              >
-                <Heart className="h-4 w-4 mr-1.5 animate-heartbeat" />
-                <span>Submit & Stratify Risk</span>
+              <Button type="button" variant="cardiac" onClick={submit} disabled={!stepValid} className="px-8">
+                <Heart className="mr-1.5 h-4 w-4 animate-heartbeat" />
+                Submit &amp; stratify risk
               </Button>
             )}
           </div>
