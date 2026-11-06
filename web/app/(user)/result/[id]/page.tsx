@@ -72,12 +72,11 @@ export default async function ResultPage({ params }: { params: Promise<{ id: str
 
       {/* Header */}
       <Reveal>
-        <div className="relative overflow-hidden rounded-[2rem] border border-[var(--cardiac-100)] bg-white p-6 shadow-[0_1px_2px_rgba(74,2,24,0.04),0_18px_40px_-24px_rgba(222,17,69,0.28)] sm:p-8">
-          <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-[var(--cardiac-100)]/50 blur-3xl" />
+        <div className="relative overflow-hidden rounded-lg border border-[var(--cardiac-100)] bg-white p-6 shadow-sm sm:p-8">
           <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <div className="flex items-center gap-2.5">
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--cardiac-50)] text-[var(--cardiac-600)]">
+                <span className="flex h-9 w-9 items-center justify-center rounded-md bg-[var(--cardiac-50)] text-[var(--cardiac-600)]">
                   <FileText className="h-4 w-4" />
                 </span>
                 <span className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--cardiac-600)]">
@@ -124,7 +123,7 @@ export default async function ResultPage({ params }: { params: Promise<{ id: str
               </CardHeader>
               <CardContent className="space-y-5">
                 {record.status !== "non_heart" ? (
-                  <div className="grid gap-4 rounded-2xl border border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/40 p-5 sm:grid-cols-2">
+                  <div className="grid gap-4 rounded-md border border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/40 p-5 sm:grid-cols-2">
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-xs">
                         <span className="font-semibold text-[var(--ink-500)]">
@@ -210,9 +209,9 @@ export default async function ResultPage({ params }: { params: Promise<{ id: str
                   {conditions.map((condition, idx) => (
                     <div
                       key={condition.name}
-                      className="flex items-start gap-3.5 rounded-2xl border border-[var(--cardiac-100)] bg-white p-4 transition-all hover:border-[var(--cardiac-300)] hover:shadow-sm"
+                      className="flex items-start gap-3.5 rounded-md border border-[var(--cardiac-100)] bg-white p-4 transition-colors hover:border-[var(--cardiac-300)]"
                     >
-                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-[var(--cardiac-50)] text-xs font-black text-[var(--cardiac-600)]">
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[var(--cardiac-50)] text-xs font-black text-[var(--cardiac-600)]">
                         {idx + 1}
                       </span>
                       <div className="space-y-1">
@@ -239,7 +238,7 @@ export default async function ResultPage({ params }: { params: Promise<{ id: str
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="rounded-2xl border border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/40 p-5 text-sm leading-relaxed text-[var(--ink-700)]">
+                  <div className="rounded-md border border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/40 p-5 text-sm leading-relaxed text-[var(--ink-700)]">
                     {record.explanation}
                   </div>
                 </CardContent>
@@ -252,7 +251,7 @@ export default async function ResultPage({ params }: { params: Promise<{ id: str
             <Reveal>
               <Card className="border-[var(--cardiac-200)] bg-gradient-to-br from-white to-[var(--cardiac-50)]/60">
                 <CardContent className="flex items-center gap-4 p-5">
-                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--cardiac-500)] to-[var(--cardiac-800)] text-white shadow-md shadow-[color:rgba(222,17,69,0.3)]">
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-[var(--cardiac-500)] to-[var(--cardiac-800)] text-white">
                     <Stethoscope className="h-6 w-6" />
                   </span>
                   <div>
@@ -309,7 +308,7 @@ export default async function ResultPage({ params }: { params: Promise<{ id: str
                     {record.lifestyleTips.map((tip) => (
                       <li
                         key={tip}
-                        className="rounded-2xl border border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/40 p-3.5 text-xs leading-relaxed text-[var(--ink-700)]"
+                        className="rounded-md border border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/40 p-3.5 text-xs leading-relaxed text-[var(--ink-700)]"
                       >
                         {tip}
                       </li>
@@ -322,7 +321,7 @@ export default async function ResultPage({ params }: { params: Promise<{ id: str
 
           {/* Sources */}
           {record.sources.length > 0 ? (
-            <div className="flex items-start gap-2.5 rounded-2xl border border-[var(--ink-100)] bg-white p-4 text-xs text-[var(--ink-500)] shadow-sm">
+            <div className="flex items-start gap-2.5 rounded-md border border-[var(--ink-100)] bg-white p-4 text-xs text-[var(--ink-500)]">
               <BookOpen className="mt-0.5 h-4 w-4 shrink-0 text-[var(--cardiac-400)]" />
               <span className="leading-relaxed">
                 <strong className="text-[var(--ink-900)]">{t("result.sources")}:</strong>{" "}
@@ -349,7 +348,7 @@ export default async function ResultPage({ params }: { params: Promise<{ id: str
       </div>
 
       {/* Limitations */}
-      <details className="group rounded-3xl border border-[var(--ink-100)] bg-white p-5 shadow-sm">
+      <details className="group rounded-md border border-[var(--ink-100)] bg-white p-5">
         <summary className="flex cursor-pointer list-none items-center justify-between text-sm font-bold text-[var(--ink-900)]">
           <span>{t("result.about")}</span>
           <ChevronRight className="h-4 w-4 text-[var(--cardiac-400)] transition-transform duration-200 group-open:rotate-90" />

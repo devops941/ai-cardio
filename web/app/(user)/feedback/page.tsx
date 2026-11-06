@@ -44,7 +44,7 @@ export default function FeedbackPage() {
           <div className="h-1.5 w-full bg-gradient-to-r from-[var(--cardiac-500)] via-[var(--cardiac-600)] to-[var(--cardiac-800)]" />
           <CardContent className="p-8 sm:p-10">
             <div className="text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-[var(--cardiac-50)] text-[var(--cardiac-600)]">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-md bg-[var(--cardiac-50)] text-[var(--cardiac-600)]">
                 <Heart className="h-8 w-8 animate-heartbeat" />
               </div>
               <h1 className="text-2xl font-black tracking-tight text-[var(--ink-900)]">
@@ -58,7 +58,7 @@ export default function FeedbackPage() {
 
             <div className="mt-8">
               {done ? (
-                <div className="flex flex-col items-center justify-center rounded-3xl border border-emerald-100 bg-emerald-50/60 p-10 text-center">
+                <div className="flex flex-col items-center justify-center rounded-md border border-emerald-100 bg-emerald-50/60 p-10 text-center">
                   <span className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
                     <CheckCircle2 className="h-9 w-9 text-emerald-600" />
                   </span>
@@ -87,9 +87,9 @@ export default function FeedbackPage() {
                             onMouseEnter={() => setHoverRating(value)}
                             onMouseLeave={() => setHoverRating(0)}
                             onClick={() => setRating(value)}
-                            className={`flex h-14 w-14 items-center justify-center rounded-2xl border transition-all duration-200 ${
+                            className={`flex h-14 w-14 items-center justify-center rounded-md border transition-all duration-200 ${
                               active
-                                ? "scale-105 border-amber-400 bg-amber-50 text-amber-500 shadow-md shadow-amber-500/20"
+                                ? "border-amber-400 bg-amber-50 text-amber-500"
                                 : "border-[var(--ink-100)] bg-white text-[var(--ink-300)] hover:border-amber-300 hover:text-amber-400"
                             }`}
                           >

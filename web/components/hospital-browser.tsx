@@ -62,7 +62,7 @@ export function HospitalBrowser({ initialCity }: { initialCity: string }) {
       <Card>
         <CardContent className="p-5 sm:p-6">
           <div className="mb-5 flex items-center gap-2.5 text-sm font-bold text-[var(--ink-900)]">
-            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--cardiac-50)] text-[var(--cardiac-600)]">
+            <span className="flex h-8 w-8 items-center justify-center rounded-md bg-[var(--cardiac-50)] text-[var(--cardiac-600)]">
               <Filter className="h-4 w-4" />
             </span>
             Filter cardiac facilities
@@ -138,7 +138,7 @@ export function HospitalBrowser({ initialCity }: { initialCity: string }) {
       ) : null}
 
       {rows && rows.length === 0 && !loading ? (
-        <div className="rounded-3xl border border-dashed border-[var(--cardiac-200)] bg-[var(--cardiac-50)]/40 p-10 text-center">
+        <div className="rounded-md border border-dashed border-[var(--cardiac-200)] bg-[var(--cardiac-50)]/40 p-10 text-center">
           <Building2 className="mx-auto h-10 w-10 text-[var(--cardiac-400)]" />
           <h4 className="mt-3 font-bold text-[var(--ink-900)]">No hospitals found</h4>
           <p className="mt-1.5 text-sm text-[var(--ink-500)]">{t("hospitals.noResults")}</p>
@@ -146,7 +146,7 @@ export function HospitalBrowser({ initialCity }: { initialCity: string }) {
       ) : null}
 
       {center ? (
-        <div className="overflow-hidden rounded-3xl border border-[var(--cardiac-100)] shadow-md">
+        <div className="overflow-hidden rounded-lg border border-[var(--cardiac-100)]">
           <HospitalMapDynamic
             center={center}
             hospitals={withCoords.map((h, index) => ({

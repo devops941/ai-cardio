@@ -20,6 +20,7 @@ export type ErrorCode =
   | "DOC_CONVERSION_UNAVAILABLE"
   | "NO_EXTRACTABLE_TEXT"
   | "CONFLICT"
+  | "LAST_ACTIVE_MODEL"
   | "INTERNAL_ERROR";
 
 export class AppError extends Error {

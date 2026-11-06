@@ -227,8 +227,8 @@ export function CheckWizard() {
           <div className="shimmer-bar h-full w-full" />
         </div>
         <CardContent className="space-y-6 px-6 py-12 text-center" aria-live="polite">
-          <div className="relative mx-auto flex h-24 w-24 items-center justify-center rounded-3xl bg-[var(--cardiac-50)] shadow-inner">
-            <span className="absolute inset-0 rounded-3xl border-2 border-[var(--cardiac-400)]/40 animate-ring-ping" />
+          <div className="relative mx-auto flex h-24 w-24 items-center justify-center rounded-lg bg-[var(--cardiac-50)]">
+            <span className="absolute inset-0 rounded-lg border-2 border-[var(--cardiac-400)]/40 animate-ring-ping" />
             <Heart aria-hidden className="h-11 w-11 animate-heartbeat fill-[var(--cardiac-600)]/20 text-[var(--cardiac-600)]" />
           </div>
 
@@ -249,7 +249,7 @@ export function CheckWizard() {
                 <div
                   key={message}
                   className={cn(
-                    "flex items-center gap-3 rounded-2xl p-3 text-xs font-semibold transition-all duration-300",
+                    "flex items-center gap-3 rounded-md p-3 text-xs font-semibold transition-all duration-300",
                     isCurrent
                       ? "border border-[var(--cardiac-200)] bg-[var(--cardiac-50)] text-[var(--cardiac-900)]"
                       : isPast
@@ -283,10 +283,9 @@ export function CheckWizard() {
     <Card className="mx-auto max-w-4xl overflow-hidden">
       {/* Header */}
       <div className="relative overflow-hidden bg-gradient-to-r from-[var(--cardiac-700)] via-[var(--cardiac-600)] to-[var(--cardiac-800)] p-6 text-white sm:p-8">
-        <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-white/10 blur-3xl" />
         <div className="relative flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
-            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-md">
+            <span className="flex h-12 w-12 items-center justify-center rounded-md bg-white/15">
               <HeartPulse className="h-6 w-6 animate-heartbeat text-white" />
             </span>
             <div>
@@ -298,7 +297,7 @@ export function CheckWizard() {
               </p>
             </div>
           </div>
-          <span className="rounded-full bg-white/15 px-3.5 py-1.5 text-xs font-bold backdrop-blur-md">
+          <span className="rounded-full bg-white/15 px-3.5 py-1.5 text-xs font-bold">
             {progressPercent.toFixed(0)}% complete
           </span>
         </div>
@@ -322,7 +321,7 @@ export function CheckWizard() {
                 onClick={() => (index < step ? setStep(index) : undefined)}
                 disabled={index > step}
                 className={cn(
-                  "flex items-center justify-center gap-1.5 rounded-xl py-2 transition-all",
+                  "flex items-center justify-center gap-1.5 rounded-md py-2 transition-all",
                   active
                     ? "bg-white font-bold text-[var(--cardiac-800)] shadow-sm"
                     : done
@@ -363,10 +362,10 @@ export function CheckWizard() {
                     onClick={() => toggle("symptoms", id)}
                     aria-pressed={selected}
                     className={cn(
-                      "flex cursor-pointer items-start gap-3 rounded-2xl border p-3.5 text-left transition-all duration-150",
+                      "flex cursor-pointer items-start gap-3 rounded-md border p-3.5 text-left transition-colors duration-150",
                       selected
-                        ? "border-[var(--cardiac-500)] bg-[var(--cardiac-50)] shadow-sm shadow-[color:rgba(222,17,69,0.12)]"
-                        : "border-[var(--ink-100)] bg-white hover:-translate-y-0.5 hover:border-[var(--cardiac-300)] hover:bg-[var(--cardiac-50)]/40",
+                        ? "border-[var(--cardiac-500)] bg-[var(--cardiac-50)]"
+                        : "border-[var(--ink-100)] bg-white hover:border-[var(--cardiac-300)] hover:bg-[var(--cardiac-50)]/40",
                     )}
                   >
                     <span
@@ -411,7 +410,7 @@ export function CheckWizard() {
               </Select>
             </div>
 
-            <div className="flex items-center gap-3 rounded-2xl border border-[var(--ink-100)] bg-[var(--cardiac-50)]/40 p-4">
+            <div className="flex items-center gap-3 rounded-md border border-[var(--ink-100)] bg-[var(--cardiac-50)]/40 p-4">
               <Checkbox
                 id="sudden"
                 checked={form.sudden}
@@ -422,7 +421,7 @@ export function CheckWizard() {
               </Label>
             </div>
 
-            <div className="space-y-3 rounded-2xl border border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/40 p-5">
+            <div className="space-y-3 rounded-md border border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/40 p-5">
               <div className="flex items-center justify-between">
                 <Label htmlFor="severity" className="font-bold text-[var(--ink-900)]">
                   Severity of symptoms
@@ -528,7 +527,7 @@ export function CheckWizard() {
                       onClick={() => toggle("riskFactors", id)}
                       aria-pressed={selected}
                       className={cn(
-                        "flex cursor-pointer items-center gap-3 rounded-2xl border p-3.5 text-left transition-all duration-150",
+                        "flex cursor-pointer items-center gap-3 rounded-md border p-3.5 text-left transition-colors duration-150",
                         selected
                           ? "border-[var(--cardiac-400)] bg-[var(--cardiac-50)] font-bold text-[var(--cardiac-900)]"
                           : "border-[var(--ink-100)] bg-white text-[var(--ink-700)] hover:border-[var(--cardiac-200)] hover:bg-[var(--cardiac-50)]/40",
@@ -554,9 +553,9 @@ export function CheckWizard() {
         {/* STEP 3 — Clinical labs */}
         {step === 2 ? (
           <div className="space-y-6">
-            <div className="space-y-3 rounded-2xl border border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/50 p-5">
+            <div className="space-y-3 rounded-md border border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/50 p-5">
               <div className="flex items-start gap-3.5">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[var(--cardiac-100)] text-[var(--cardiac-700)]">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-[var(--cardiac-100)] text-[var(--cardiac-700)]">
                   <Activity className="h-5 w-5" />
                 </span>
                 <div>
@@ -587,7 +586,7 @@ export function CheckWizard() {
                 {CLINICAL_FIELDS.map((field) => (
                   <div
                     key={field.name}
-                    className="space-y-2 rounded-2xl border border-[var(--ink-100)] bg-white p-4"
+                    className="space-y-2 rounded-md border border-[var(--ink-100)] bg-white p-4"
                   >
                     <div className="flex items-center justify-between gap-2">
                       <Label htmlFor={`clinical-${field.name}`} className="text-xs font-semibold text-[var(--ink-900)]">
@@ -614,7 +613,7 @@ export function CheckWizard() {
                 ))}
               </div>
             ) : (
-              <div className="space-y-2 rounded-2xl border border-dashed border-[var(--cardiac-200)] bg-[var(--cardiac-50)]/30 p-10 text-center">
+              <div className="space-y-2 rounded-md border border-dashed border-[var(--cardiac-200)] bg-[var(--cardiac-50)]/30 p-10 text-center">
                 <Stethoscope className="mx-auto h-9 w-9 text-[var(--cardiac-400)]" />
                 <p className="text-sm font-bold text-[var(--ink-900)]">
                   No lab reports handy right now?
@@ -640,9 +639,9 @@ export function CheckWizard() {
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--cardiac-200)] bg-[var(--cardiac-50)]/40 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-[var(--cardiac-200)] bg-[var(--cardiac-50)]/40 p-4">
               <div className="flex items-center gap-3">
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--cardiac-600)] to-[var(--cardiac-800)] text-white shadow-md">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-[var(--cardiac-600)] to-[var(--cardiac-800)] text-white">
                   <Compass className="h-5 w-5 animate-spin-slow" />
                 </span>
                 <div>
@@ -692,7 +691,7 @@ export function CheckWizard() {
               </div>
             </div>
 
-            <div className="space-y-3 rounded-2xl border border-[var(--cardiac-200)] bg-white p-5">
+            <div className="space-y-3 rounded-md border border-[var(--cardiac-200)] bg-white p-5">
               <div className="flex items-start gap-3">
                 <Checkbox
                   id="consent"
@@ -709,7 +708,7 @@ export function CheckWizard() {
                 </Label>
               </div>
 
-              <div className="flex items-start gap-2 rounded-2xl border border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/50 p-3.5 text-[11px] text-[var(--ink-500)]">
+              <div className="flex items-start gap-2 rounded-md border border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/50 p-3.5 text-[11px] text-[var(--ink-500)]">
                 <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
                 <span className="leading-relaxed">{DISCLAIMER}</span>
               </div>

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Toaster } from "sonner";
 
 import { Providers } from "@/components/providers";
 import { SiteFooter } from "@/components/site-footer";
@@ -32,22 +33,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body
         className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-[var(--background)] text-[var(--ink-900)] antialiased`}
       >
+        {/* Skip to main content — visible on keyboard focus */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[9999] focus:rounded-lg focus:bg-[var(--cardiac-600)] focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:shadow-lg focus:outline-none"
+        >
+          Skip to content
+        </a>
+
         <Providers>
           <div className="relative flex min-h-screen w-full flex-col">
-            {/* Ambient cardiac glow backdrop */}
-            <div
-              aria-hidden
-              className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
-            >
-              <div className="absolute -top-40 left-1/2 h-[34rem] w-[34rem] -translate-x-1/2 rounded-full bg-[var(--cardiac-200)]/30 blur-[120px]" />
-              <div className="absolute bottom-0 right-0 h-[26rem] w-[26rem] rounded-full bg-[var(--cardiac-300)]/20 blur-[130px]" />
-            </div>
-
             <SiteHeader />
-            <main className="flex-1">{children}</main>
+            <main id="main-content" className="flex-1">{children}</main>
             <SiteFooter />
           </div>
         </Providers>
+
+        <Toaster richColors position="top-center" />
       </body>
     </html>
   );

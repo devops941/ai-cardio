@@ -28,6 +28,7 @@ interface VersionRow {
 interface VersionsResponse {
   versions: VersionRow[];
   activeVersion: number | null;
+  activeVersions: number[];
   aiReachable: boolean;
 }
 
@@ -117,7 +118,28 @@ export default function AdminMlPage() {
     }
   }
 
-  const active = data?.versions.find((v) => v.isActive) ?? null;
+  async function deactivate(version: number) {
+    setBusy(true);
+    setError(null);
+    try {
+      await apiFetch(`/api/admin/ml/deactivate/${version}`, { method: "POST" });
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("errors.generic"));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  // Pick the primary active version: highest active version number, fallback to first version.
+  const activeVersionNums = data?.activeVersions ?? [];
+  const primaryActiveVersion =
+    activeVersionNums.length > 0
+      ? (data?.versions.find(
+          (v) => v.version === Math.max(...activeVersionNums)
+        ) ?? data?.versions[0] ?? null)
+      : (data?.versions[0] ?? null);
+  const active = primaryActiveVersion;
   const metrics = (active?.metrics ?? {}) as {
     comparison?: ComparisonRow[];
     feature_importances?: ImportanceRow[];
@@ -147,13 +169,13 @@ export default function AdminMlPage() {
               </p>
             </div>
             <div className="flex items-center gap-3">
-              {data?.activeVersion !== null && data?.activeVersion !== undefined ? (
+              {data && (data.activeVersions?.length ?? 0) > 0 ? (
                 <div className="flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
                   <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
-                  Active: v{data.activeVersion}
+                  {t("admin.activeVersionsLabel")}: {data.activeVersions.map((v) => `v${v}`).join(", ")}
                 </div>
               ) : null}
-              <Button onClick={train} disabled={busy} size="sm" className="gap-2 rounded-xl">
+              <Button onClick={train} disabled={busy} size="sm" className="gap-2">
                 <RefreshCw className={`h-3.5 w-3.5 ${busy ? "animate-spin" : ""}`} />
                 {busy ? t("admin.training") : t("admin.train")}
               </Button>
@@ -162,11 +184,11 @@ export default function AdminMlPage() {
         </CardHeader>
         <CardContent>
           {data === null ? (
-            <Skeleton className="h-40 w-full rounded-2xl" />
+            <Skeleton className="h-40 w-full rounded-md" />
           ) : data.versions.length === 0 ? (
             <p className="text-xs text-[var(--ink-500)] text-center py-6">{t("admin.noData")}</p>
           ) : (
-            <div className="overflow-x-auto rounded-xl border border-[var(--ink-100)]">
+            <div className="overflow-x-auto rounded-md border border-[var(--ink-100)]">
               <table className="w-full text-left text-xs">
                 <thead className="bg-[var(--ink-50)]/80 font-semibold text-[var(--ink-700)] border-b border-[var(--ink-100)]">
                   <tr>
@@ -193,15 +215,27 @@ export default function AdminMlPage() {
                       <td className="px-4 py-3">{percent(row.f1)}</td>
                       <td className="px-4 py-3 font-semibold text-[var(--cardiac-700)]">{percent(row.rocAuc)}</td>
                       <td className="px-4 py-3 text-right">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          disabled={busy || row.isActive}
-                          onClick={() => activate(row.version)}
-                          className="h-7 text-xs rounded-lg"
-                        >
-                          {row.isActive ? "Live" : t("admin.activate")}
-                        </Button>
+                        {row.isActive ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={busy || (data.activeVersions?.length ?? 0) <= 1}
+                            onClick={() => deactivate(row.version)}
+                            className="h-7 text-xs border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800 disabled:opacity-40"
+                          >
+                            {t("admin.deactivate")}
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={busy}
+                            onClick={() => activate(row.version)}
+                            className="h-7 text-xs"
+                          >
+                            {t("admin.activate")}
+                          </Button>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -223,7 +257,7 @@ export default function AdminMlPage() {
             <p className="text-xs text-[var(--ink-500)]">Cross-algorithm benchmarks evaluated during training run</p>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto rounded-xl border border-[var(--ink-100)]">
+            <div className="overflow-x-auto rounded-md border border-[var(--ink-100)]">
               <table className="w-full text-left text-xs">
                 <thead className="bg-[var(--ink-50)]/80 font-semibold text-[var(--ink-700)] border-b border-[var(--ink-100)]">
                   <tr>
@@ -302,7 +336,7 @@ export default function AdminMlPage() {
               <p className="text-xs text-[var(--ink-500)]">True Negative vs True Positive validation counts</p>
             </CardHeader>
             <CardContent>
-              <div className="overflow-hidden rounded-2xl border border-[var(--ink-100)] bg-[var(--ink-50)]/50 p-4">
+              <div className="overflow-hidden rounded-md border border-[var(--ink-100)] bg-[var(--ink-50)]/50 p-4">
                 <table className="w-full text-xs text-center">
                   <thead>
                     <tr>

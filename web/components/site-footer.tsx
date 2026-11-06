@@ -23,8 +23,8 @@ const PLATFORM_LINKS = [
 ];
 
 const CLINICAL_LINKS = [
-  { label: "ACC / AHA Guidelines" },
-  { label: "ESC Cardiology Standards" },
+  { label: "ACC / AHA Guidelines", href: "https://www.ahajournals.org" },
+  { label: "ESC Cardiology Standards", href: "https://www.escardio.org" },
   { label: "Cleveland Heart Dataset" },
   { label: "Deterministic Red-Flag Rules" },
   { label: "RAG Knowledge Retrieval" },
@@ -40,7 +40,7 @@ export function SiteFooter() {
           {/* Brand */}
           <div className="space-y-4 lg:col-span-4">
             <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--cardiac-600)] to-[var(--cardiac-900)] shadow-lg shadow-[color:rgba(222,17,69,0.3)]">
+              <span className="flex h-10 w-10 items-center justify-center rounded-md bg-gradient-to-br from-[var(--cardiac-600)] to-[var(--cardiac-900)]">
                 <Heart aria-hidden className="h-5 w-5 animate-heartbeat fill-white/25 text-white" />
               </span>
               <span className="text-lg font-black tracking-tight text-[var(--ink-900)]">
@@ -85,7 +85,7 @@ export function SiteFooter() {
             <div className="space-y-2.5">
               <a
                 href="tel:108"
-                className="block rounded-2xl border border-red-200 bg-red-50 p-3 transition-all hover:-translate-y-0.5 hover:border-red-300 hover:shadow-md"
+                className="block rounded-md border border-red-200 bg-red-50 p-3 transition-colors hover:border-red-300"
               >
                 <p className="flex items-center gap-1.5 text-sm font-bold text-red-900">
                   <Phone className="h-3.5 w-3.5 text-red-600" /> Ambulance · 108
@@ -94,7 +94,7 @@ export function SiteFooter() {
               </a>
               <a
                 href="tel:112"
-                className="block rounded-2xl border border-[var(--cardiac-200)] bg-white p-3 transition-all hover:-translate-y-0.5 hover:border-[var(--cardiac-300)] hover:shadow-md"
+                className="block rounded-md border border-[var(--cardiac-200)] bg-white p-3 transition-colors hover:border-[var(--cardiac-300)]"
               >
                 <p className="flex items-center gap-1.5 text-sm font-bold text-[var(--ink-900)]">
                   <Activity className="h-3.5 w-3.5 text-[var(--cardiac-600)]" /> All-in-one · 112
@@ -113,7 +113,18 @@ export function SiteFooter() {
               {CLINICAL_LINKS.map((item) => (
                 <li key={item.label} className="flex items-center gap-2">
                   <Stethoscope className="h-3.5 w-3.5 shrink-0 text-[var(--cardiac-400)]" />
-                  {item.label}
+                  {"href" in item ? (
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="transition-colors hover:text-[var(--cardiac-600)] underline-offset-2 hover:underline"
+                    >
+                      {item.label}
+                    </a>
+                  ) : (
+                    item.label
+                  )}
                 </li>
               ))}
             </ul>
@@ -121,7 +132,7 @@ export function SiteFooter() {
         </div>
 
         {/* Disclaimer */}
-        <div className="mt-10 rounded-3xl border border-[var(--cardiac-200)]/70 bg-white/80 p-5 backdrop-blur-sm">
+        <div className="mt-10 rounded-md border border-[var(--cardiac-200)]/70 bg-white/80 p-5">
           <div className="flex items-start gap-3">
             <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-[var(--cardiac-600)]" />
             <p className="text-xs leading-relaxed text-[var(--ink-700)]">

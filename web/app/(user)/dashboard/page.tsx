@@ -82,7 +82,7 @@ export default async function DashboardPage() {
     <div className="mx-auto w-full max-w-[1600px] space-y-8 px-4 py-8 sm:px-6 lg:px-10 lg:py-12">
       {/* Hero */}
       <Reveal>
-        <div className="relative isolate overflow-hidden rounded-[2rem] cardiac-mesh p-6 shadow-2xl sm:p-10">
+        <div className="relative isolate overflow-hidden rounded-lg cardiac-mesh p-6 sm:p-10">
           <div className="absolute inset-0 -z-10 opacity-20">
             <Image
               src="https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?auto=format&fit=crop&w=1600&q=80"
@@ -132,15 +132,14 @@ export default async function DashboardPage() {
                 </Button>
               </div>
 
-              <div className="grid max-w-lg grid-cols-3 gap-4 border-t border-white/15 pt-5">
+              <div className="grid max-w-lg grid-cols-2 gap-4 border-t border-white/15 pt-5">
                 {[
                   { label: "Screenings", value: count },
-                  { label: "Recall", value: "96.4%" },
-                  { label: "Rules", value: 8 },
+                  { label: "Red-flag rules", value: 8 },
                 ].map((item) => (
                   <div key={item.label}>
                     <p className="text-2xl font-black text-white">
-                      {typeof item.value === "number" ? <Counter value={item.value} /> : item.value}
+                      <Counter value={item.value} />
                     </p>
                     <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--cardiac-200)]/80">
                       {item.label}
@@ -151,7 +150,7 @@ export default async function DashboardPage() {
             </div>
 
             <div className="lg:col-span-5">
-              <div className="relative overflow-hidden rounded-[1.75rem] border border-white/15 bg-[var(--cardiac-950)]/40 shadow-2xl backdrop-blur-md">
+              <div className="relative overflow-hidden rounded-md border border-white/15 bg-[var(--cardiac-950)]/40 backdrop-blur-md">
                 <div className="relative h-52 w-full overflow-hidden sm:h-60">
                   <Image
                     src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=900&q=80"
@@ -188,10 +187,10 @@ export default async function DashboardPage() {
           <Reveal key={action.href} delay={(index + 1) as 1 | 2 | 3}>
             <Link
               href={action.href}
-              className="group flex h-full flex-col rounded-3xl border border-[var(--cardiac-100)] bg-white p-6 shadow-[0_1px_2px_rgba(74,2,24,0.04),0_18px_40px_-24px_rgba(222,17,69,0.28)] transition-all duration-300 hover:-translate-y-1.5 hover:border-[var(--cardiac-300)]"
+              className="group flex h-full flex-col rounded-md border border-[var(--cardiac-100)] bg-white p-6 shadow-sm transition-all duration-300 hover:border-[var(--cardiac-300)]"
             >
               <div
-                className={`flex h-12 w-12 items-center justify-center rounded-2xl transition-colors ${
+                className={`flex h-12 w-12 items-center justify-center rounded-md transition-colors ${
                   action.accent
                     ? "bg-gradient-to-br from-[var(--cardiac-500)] to-[var(--cardiac-800)] text-white"
                     : "bg-[var(--cardiac-50)] text-[var(--cardiac-700)] group-hover:bg-[var(--cardiac-600)] group-hover:text-white"
@@ -215,9 +214,9 @@ export default async function DashboardPage() {
 
         {/* Emergency card */}
         <Reveal delay={4}>
-          <div className="relative flex h-full flex-col overflow-hidden rounded-3xl bg-gradient-to-br from-red-600 via-[var(--cardiac-600)] to-[var(--cardiac-800)] p-6 text-white shadow-lg shadow-red-600/25">
+          <div className="relative flex h-full flex-col overflow-hidden rounded-md bg-gradient-to-br from-red-600 via-[var(--cardiac-600)] to-[var(--cardiac-800)] p-6 text-white">
             <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
-            <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20">
+            <div className="relative flex h-12 w-12 items-center justify-center rounded-md bg-white/20">
               <Phone className="h-6 w-6 animate-pulse" />
             </div>
             <h3 className="relative mt-4 font-bold text-white">24×7 Ambulance Hotline</h3>
@@ -269,7 +268,7 @@ export default async function DashboardPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {last ? (
-                  <div className="space-y-4 rounded-2xl border border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/40 p-5">
+                  <div className="space-y-4 rounded-md border border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/40 p-5">
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div className="flex items-center gap-3">
                         <RiskBadge
@@ -300,7 +299,9 @@ export default async function DashboardPage() {
                     <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--cardiac-100)] pt-3">
                       <span className="text-xs text-[var(--ink-500)]">
                         Status:{" "}
-                        <span className="font-semibold text-[var(--ink-900)]">{last.status}</span>
+                        <span className="font-semibold text-[var(--ink-900)]">
+                          {t(`status.${last.status}`)}
+                        </span>
                       </span>
                       <Button asChild size="sm">
                         <Link href={`/result/${last.id}`} className="flex items-center gap-1.5">
@@ -311,7 +312,7 @@ export default async function DashboardPage() {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[var(--cardiac-200)] bg-[var(--cardiac-50)]/40 p-10 text-center">
+                  <div className="flex flex-col items-center justify-center rounded-md border border-dashed border-[var(--cardiac-200)] bg-[var(--cardiac-50)]/40 p-10 text-center">
                     <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--cardiac-100)] text-[var(--cardiac-600)]">
                       <Heart className="h-7 w-7 animate-heartbeat" />
                     </div>
@@ -349,7 +350,7 @@ export default async function DashboardPage() {
                 {ESSENTIALS.map((item, index) => (
                   <div
                     key={item.title}
-                    className="flex items-start gap-3.5 rounded-2xl border border-[var(--cardiac-100)] bg-white p-4 transition-all hover:border-[var(--cardiac-200)] hover:shadow-sm"
+                    className="flex items-start gap-3.5 rounded-md border border-[var(--cardiac-100)] bg-white p-4 transition-all hover:border-[var(--cardiac-200)] hover:shadow-sm"
                   >
                     <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[var(--cardiac-50)] text-sm font-black text-[var(--cardiac-600)]">
                       {index + 1}
@@ -363,7 +364,7 @@ export default async function DashboardPage() {
                   </div>
                 ))}
 
-                <div className="flex items-center gap-2.5 rounded-2xl bg-emerald-50 p-3.5 text-xs font-semibold text-emerald-800">
+                <div className="flex items-center gap-2.5 rounded-md bg-emerald-50 p-3.5 text-xs font-semibold text-emerald-800">
                   <TrendingUp className="h-4 w-4 shrink-0 text-emerald-600" />
                   Consistent screening improves early detection rates.
                 </div>

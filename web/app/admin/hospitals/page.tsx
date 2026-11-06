@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Building2, Edit, Plus, Search, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { AdminEmpty, AdminTable, AdminTableCard } from "@/components/admin/admin-table";
@@ -10,6 +11,7 @@ import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { ConfirmDeleteDialog } from "@/components/ui/confirm-delete-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -41,6 +43,7 @@ export default function AdminHospitalsPage() {
   const [error, setError] = useState<string | null>(null);
   const [draft, setDraft] = useState<Partial<HospitalRow> | null>(null);
   const [saving, setSaving] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -61,6 +64,7 @@ export default function AdminHospitalsPage() {
     if (!draft) return;
     setSaving(true);
     setError(null);
+    const isEdit = Boolean(draft.id);
     try {
       const payload = {
         name: draft.name ?? "",
@@ -87,25 +91,41 @@ export default function AdminHospitalsPage() {
       }
       setDraft(null);
       await load();
+      toast.success(isEdit ? "Hospital updated successfully." : "Hospital added successfully.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("errors.generic"));
+      const message = err instanceof Error ? err.message : t("errors.generic");
+      setError(message);
+      toast.error(message);
     } finally {
       setSaving(false);
     }
   }
 
-  async function remove(id: string) {
-    if (!window.confirm(t("fields.deleteConfirmHospital"))) return;
+  async function handleConfirmDelete() {
+    if (!pendingDeleteId) return;
+    const id = pendingDeleteId;
+    setPendingDeleteId(null);
     try {
       await apiFetch(`/api/admin/hospitals/${id}`, { method: "DELETE" });
       setRows((prev) => (prev ? prev.filter((row) => row.id !== id) : prev));
+      toast.success("Hospital deleted successfully.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("errors.generic"));
+      const message = err instanceof Error ? err.message : t("errors.generic");
+      setError(message);
+      toast.error(message);
     }
   }
 
   return (
     <div className="space-y-6">
+      <ConfirmDeleteDialog
+        open={pendingDeleteId !== null}
+        onOpenChange={(open) => { if (!open) setPendingDeleteId(null); }}
+        title={t("admin.delete")}
+        description={t("fields.deleteConfirmHospital")}
+        onConfirm={handleConfirmDelete}
+      />
+
       <AdminPageHeader
         icon={Building2}
         title={t("admin.hospitals")}
@@ -121,7 +141,7 @@ export default function AdminHospitalsPage() {
       {error ? <Alert tone="error">{error}</Alert> : null}
 
       {draft ? (
-        <div className="space-y-4 rounded-3xl border border-[var(--cardiac-200)] bg-[var(--cardiac-50)]/40 p-5">
+        <div className="space-y-4 rounded-lg border border-[var(--cardiac-200)] bg-[var(--cardiac-50)]/40 p-5">
           <h4 className="text-xs font-black uppercase tracking-[0.14em] text-[var(--cardiac-800)]">
             {draft.id ? "Edit cardiac facility" : "Add new cardiac facility"}
           </h4>
@@ -230,7 +250,7 @@ export default function AdminHospitalsPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => remove(row.id)}
+                      onClick={() => setPendingDeleteId(row.id)}
                       className="h-8 w-8 p-0 text-[var(--ink-300)] hover:bg-[var(--cardiac-50)] hover:text-[var(--cardiac-600)]"
                     >
                       <Trash2 className="h-3.5 w-3.5" />

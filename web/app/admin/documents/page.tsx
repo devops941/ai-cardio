@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FileText, RefreshCw, Trash2, UploadCloud } from "lucide-react";
+import { toast } from "sonner";
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { AdminEmpty, AdminTable, AdminTableCard } from "@/components/admin/admin-table";
@@ -9,6 +10,7 @@ import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ConfirmDeleteDialog } from "@/components/ui/confirm-delete-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiFetch } from "@/lib/api";
 import { t } from "@/lib/i18n";
@@ -54,6 +56,7 @@ export default function AdminDocumentsPage() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(async () => {
@@ -83,26 +86,42 @@ export default function AdminDocumentsPage() {
       form.append("file", file);
       await apiFetch("/api/admin/documents", { method: "POST", body: form });
       await load();
+      toast.success("Document uploaded and queued for ingestion.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("errors.generic"));
+      const message = err instanceof Error ? err.message : t("errors.generic");
+      setError(message);
+      toast.error(message);
     } finally {
       setBusy(false);
       if (inputRef.current) inputRef.current.value = "";
     }
   }
 
-  async function remove(id: string) {
-    if (!window.confirm(t("fields.deleteConfirmDocument"))) return;
+  async function handleConfirmDelete() {
+    if (!pendingDeleteId) return;
+    const id = pendingDeleteId;
+    setPendingDeleteId(null);
     try {
       await apiFetch(`/api/admin/documents/${id}`, { method: "DELETE" });
       setItems((prev) => (prev ? prev.filter((row) => row.id !== id) : prev));
+      toast.success("Document and its vectors deleted.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("errors.generic"));
+      const message = err instanceof Error ? err.message : t("errors.generic");
+      setError(message);
+      toast.error(message);
     }
   }
 
   return (
     <div className="space-y-6">
+      <ConfirmDeleteDialog
+        open={pendingDeleteId !== null}
+        onOpenChange={(open) => { if (!open) setPendingDeleteId(null); }}
+        title={t("admin.delete")}
+        description={t("fields.deleteConfirmDocument")}
+        onConfirm={handleConfirmDelete}
+      />
+
       <AdminPageHeader
         icon={FileText}
         title={t("admin.documents")}
@@ -140,13 +159,13 @@ export default function AdminDocumentsPage() {
               const file = e.dataTransfer.files[0];
               if (file) void upload(file);
             }}
-            className={`flex flex-col items-center justify-center rounded-3xl border-2 border-dashed p-8 text-center transition-all duration-200 ${
+            className={`flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 text-center transition-all duration-200 ${
               dragging
                 ? "border-[var(--cardiac-500)] bg-[var(--cardiac-50)]/70"
                 : "border-[var(--cardiac-200)] bg-[var(--cardiac-50)]/40 hover:border-[var(--cardiac-400)]"
             }`}
           >
-            <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-[var(--cardiac-600)] shadow-sm">
+            <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-md bg-white text-[var(--cardiac-600)] shadow-sm">
               <UploadCloud className="h-6 w-6" />
             </div>
             <p className="text-xs font-semibold text-[var(--ink-900)]">
@@ -226,7 +245,7 @@ export default function AdminDocumentsPage() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => remove(row.id)}
+                    onClick={() => setPendingDeleteId(row.id)}
                     className="h-8 w-8 p-0 text-[var(--ink-300)] hover:bg-[var(--cardiac-50)] hover:text-[var(--cardiac-600)]"
                   >
                     <Trash2 className="h-3.5 w-3.5" />

@@ -92,7 +92,7 @@ export default function AdminOverviewPage() {
             <Card key={card.label} className="group">
               <CardContent className="flex items-center gap-4 p-5">
                 <div
-                  className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-110 ${card.tone}`}
+                  className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg transition-transform duration-300 group-hover:scale-105 ${card.tone}`}
                 >
                   <Icon className="h-6 w-6" />
                 </div>
@@ -128,14 +128,14 @@ export default function AdminOverviewPage() {
               <Tooltip
                 contentStyle={{
                   backgroundColor: "#ffffff",
-                  borderRadius: "16px",
+                  borderRadius: "8px",
                   borderColor: "#ffc6cf",
                   fontSize: "12px",
-                  boxShadow: "0 18px 40px -24px rgba(222,17,69,0.4)",
+                  boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
                 }}
                 cursor={{ fill: "rgba(222,17,69,0.06)" }}
               />
-              <Bar dataKey="value" radius={[10, 10, 0, 0]}>
+              <Bar dataKey="value" radius={[4, 4, 0, 0]}>
                 {chartData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
@@ -164,7 +164,7 @@ export default function AdminOverviewPage() {
               {stats.recentFeedback.map((item) => (
                 <li
                   key={item.id}
-                  className="flex items-start gap-3 rounded-2xl border border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/40 p-3.5 text-xs"
+                  className="flex items-start gap-3 rounded-md border border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/40 p-3.5 text-xs"
                 >
                   <div className="flex shrink-0 items-center gap-1 font-black text-amber-600">
                     <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-500" />

@@ -47,7 +47,7 @@ function LoginForm() {
   }
 
   return (
-    <div className="grid w-full overflow-hidden rounded-[2rem] border border-[var(--cardiac-100)] bg-white shadow-[0_30px_80px_-40px_rgba(222,17,69,0.5)] lg:grid-cols-12">
+    <div className="grid w-full overflow-hidden rounded-lg border border-[var(--cardiac-100)] bg-white shadow-sm lg:grid-cols-12">
       <AuthShowcase
         eyebrow="Clinical Portal"
         title="Welcome back to CardioCare."

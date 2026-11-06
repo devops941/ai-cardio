@@ -18,14 +18,13 @@ export function AdminPageHeader({
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-3xl border border-[var(--cardiac-100)] bg-white p-6 shadow-[0_1px_2px_rgba(74,2,24,0.04),0_18px_40px_-24px_rgba(222,17,69,0.28)]",
+        "rounded-lg border border-[var(--cardiac-100)] bg-white p-6 shadow-sm",
         className,
       )}
     >
-      <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-[var(--cardiac-100)]/50 blur-3xl" />
-      <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3.5">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--cardiac-500)] to-[var(--cardiac-800)] text-white shadow-md shadow-[color:rgba(222,17,69,0.3)]">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-[var(--cardiac-500)] to-[var(--cardiac-800)] text-white">
             <Icon className="h-5 w-5" />
           </span>
           <div>

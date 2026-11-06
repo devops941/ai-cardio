@@ -74,7 +74,7 @@ export default function RegisterPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-[1600px] items-center justify-center px-4 py-10 sm:px-6 sm:py-16 lg:px-10">
-      <div className="grid w-full overflow-hidden rounded-[2rem] border border-[var(--cardiac-100)] bg-white shadow-[0_30px_80px_-40px_rgba(222,17,69,0.5)] lg:grid-cols-12">
+      <div className="grid w-full overflow-hidden rounded-lg border border-[var(--cardiac-100)] bg-white shadow-sm lg:grid-cols-12">
         <AuthShowcase
           eyebrow="Patient Registration"
           title="Join CardioCare."
@@ -196,7 +196,7 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              <div className="space-y-3 rounded-2xl border border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/50 p-4">
+              <div className="space-y-3 rounded-md border border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/50 p-4">
                 <label className="flex cursor-pointer items-start gap-3 text-xs text-[var(--ink-700)]">
                   <Checkbox id="consent" name="consent" required className="mt-0.5" />
                   <span className="leading-relaxed">{t("auth.consent")}</span>

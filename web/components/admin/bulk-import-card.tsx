@@ -77,9 +77,9 @@ export function BulkImportCard({
         </div>
 
         <label
-          className="flex cursor-pointer items-center gap-3 rounded-2xl border-2 border-dashed border-[var(--cardiac-200)] bg-[var(--cardiac-50)]/40 p-4 transition-colors hover:border-[var(--cardiac-400)] hover:bg-[var(--cardiac-50)]"
+          className="flex cursor-pointer items-center gap-3 rounded-md border-2 border-dashed border-[var(--cardiac-200)] bg-[var(--cardiac-50)]/40 p-4 transition-colors hover:border-[var(--cardiac-400)] hover:bg-[var(--cardiac-50)]"
         >
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white text-[var(--cardiac-600)] shadow-sm">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-white text-[var(--cardiac-600)] shadow-sm">
             <UploadCloud className="h-5 w-5" />
           </span>
           <span className="text-xs font-semibold text-[var(--ink-700)]">
@@ -109,7 +109,7 @@ export function BulkImportCard({
               (of {result.total})
             </Alert>
             {result.rejected.length > 0 ? (
-              <div className="overflow-x-auto rounded-2xl border border-[var(--ink-100)]">
+              <div className="overflow-x-auto rounded-md border border-[var(--ink-100)]">
                 <table className="w-full text-left text-xs">
                   <thead className="bg-[var(--cardiac-50)] text-[var(--ink-700)]">
                     <tr>

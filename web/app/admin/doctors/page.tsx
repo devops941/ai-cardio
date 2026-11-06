@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Edit, Plus, Search, Stethoscope, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { AdminEmpty, AdminTable, AdminTableCard } from "@/components/admin/admin-table";
@@ -9,6 +10,7 @@ import { BulkImportCard } from "@/components/admin/bulk-import-card";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ConfirmDeleteDialog } from "@/components/ui/confirm-delete-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
@@ -44,6 +46,7 @@ export default function AdminDoctorsPage() {
   const [error, setError] = useState<string | null>(null);
   const [draft, setDraft] = useState<Partial<DoctorRow> | null>(null);
   const [saving, setSaving] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -68,6 +71,7 @@ export default function AdminDoctorsPage() {
     if (!draft) return;
     setSaving(true);
     setError(null);
+    const isEdit = Boolean(draft.id);
     try {
       const payload = {
         name: draft.name ?? "",
@@ -90,25 +94,41 @@ export default function AdminDoctorsPage() {
       }
       setDraft(null);
       await load();
+      toast.success(isEdit ? "Doctor updated successfully." : "Doctor added successfully.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("errors.generic"));
+      const message = err instanceof Error ? err.message : t("errors.generic");
+      setError(message);
+      toast.error(message);
     } finally {
       setSaving(false);
     }
   }
 
-  async function remove(id: string) {
-    if (!window.confirm(t("fields.deleteConfirmDoctor"))) return;
+  async function handleConfirmDelete() {
+    if (!pendingDeleteId) return;
+    const id = pendingDeleteId;
+    setPendingDeleteId(null);
     try {
       await apiFetch(`/api/admin/doctors/${id}`, { method: "DELETE" });
       setRows((prev) => (prev ? prev.filter((row) => row.id !== id) : prev));
+      toast.success("Doctor deleted successfully.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("errors.generic"));
+      const message = err instanceof Error ? err.message : t("errors.generic");
+      setError(message);
+      toast.error(message);
     }
   }
 
   return (
     <div className="space-y-6">
+      <ConfirmDeleteDialog
+        open={pendingDeleteId !== null}
+        onOpenChange={(open) => { if (!open) setPendingDeleteId(null); }}
+        title={t("admin.delete")}
+        description={t("fields.deleteConfirmDoctor")}
+        onConfirm={handleConfirmDelete}
+      />
+
       <AdminPageHeader
         icon={Stethoscope}
         title={t("admin.doctors")}
@@ -124,7 +144,7 @@ export default function AdminDoctorsPage() {
       {error ? <Alert tone="error">{error}</Alert> : null}
 
       {draft ? (
-        <div className="space-y-4 rounded-3xl border border-[var(--cardiac-200)] bg-[var(--cardiac-50)]/40 p-5">
+        <div className="space-y-4 rounded-lg border border-[var(--cardiac-200)] bg-[var(--cardiac-50)]/40 p-5">
           <h4 className="text-xs font-black uppercase tracking-[0.14em] text-[var(--cardiac-800)]">
             {draft.id ? "Edit specialist profile" : "Add new specialist"}
           </h4>
@@ -238,7 +258,7 @@ export default function AdminDoctorsPage() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => remove(row.id)}
+                      onClick={() => setPendingDeleteId(row.id)}
                       className="h-8 w-8 p-0 text-[var(--ink-300)] hover:bg-[var(--cardiac-50)] hover:text-[var(--cardiac-600)]"
                     >
                       <Trash2 className="h-3.5 w-3.5" />

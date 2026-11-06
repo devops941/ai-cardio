@@ -35,7 +35,7 @@ export function AdminTableCard({
 
 export function AdminTable({ head, children }: { head: string[]; children: React.ReactNode }) {
   return (
-    <div className="overflow-x-auto rounded-2xl border border-[var(--cardiac-100)]">
+    <div className="overflow-x-auto rounded-md border border-[var(--cardiac-100)]">
       <table className="w-full text-left text-xs">
         <thead className="border-b border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/70 font-bold text-[var(--ink-700)]">
           <tr>

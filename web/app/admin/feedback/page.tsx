@@ -75,7 +75,7 @@ export default function AdminFeedbackPage() {
               </Select>
             </div>
             {average && !Number.isNaN(Number(average)) ? (
-              <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-2 text-xs font-semibold text-amber-900">
+              <div className="flex items-center gap-2 rounded-md border border-amber-200 bg-amber-50 px-3.5 py-2 text-xs font-semibold text-amber-900">
                 <Star className="h-4 w-4 fill-amber-400 text-amber-500" />
                 <span>
                   {t("fields.averageRating")}: {average} ({rows?.length} {t("fields.entries")})
@@ -85,11 +85,11 @@ export default function AdminFeedbackPage() {
           </div>
 
           {rows === null ? (
-            <Skeleton className="h-40 w-full rounded-2xl" />
+            <Skeleton className="h-40 w-full rounded-md" />
           ) : rows.length === 0 ? (
             <p className="text-xs text-[var(--ink-500)] text-center py-6">{t("admin.noData")}</p>
           ) : (
-            <div className="overflow-x-auto rounded-xl border border-[var(--ink-100)]">
+            <div className="overflow-x-auto rounded-md border border-[var(--ink-100)]">
               <table className="w-full text-left text-xs">
                 <thead className="bg-[var(--ink-50)]/80 font-semibold text-[var(--ink-700)] border-b border-[var(--ink-100)]">
                   <tr>

@@ -37,9 +37,9 @@ export function AdminNav() {
             key={link.href}
             href={link.href}
             className={cn(
-              "flex items-center gap-3 rounded-2xl px-3.5 py-3 text-xs font-semibold transition-all duration-200",
+              "flex items-center gap-3 rounded-md px-3.5 py-3 text-xs font-semibold transition-all duration-200",
               active
-                ? "bg-gradient-to-r from-[var(--cardiac-600)] to-[var(--cardiac-800)] text-white shadow-md shadow-[color:rgba(222,17,69,0.3)]"
+                ? "bg-gradient-to-r from-[var(--cardiac-600)] to-[var(--cardiac-800)] text-white"
                 : "text-[var(--ink-500)] hover:bg-[var(--cardiac-50)] hover:text-[var(--cardiac-700)]",
             )}
           >

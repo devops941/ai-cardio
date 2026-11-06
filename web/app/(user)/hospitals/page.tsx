@@ -15,8 +15,8 @@ export default async function HospitalsPage() {
   return (
     <div className="mx-auto w-full max-w-[1600px] space-y-8 px-4 py-8 sm:px-6 lg:px-10 lg:py-12">
       {/* Header banner */}
-      <div className="relative isolate overflow-hidden rounded-[2rem] cardiac-mesh p-6 shadow-2xl sm:p-10">
-        <div className="absolute inset-0 -z-10 opacity-25">
+      <div className="relative isolate overflow-hidden rounded-lg cardiac-mesh p-6 sm:p-10">
+        <div className="absolute inset-0 -z-10 opacity-20">
           <Image
             src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1600&q=80"
             alt=""
@@ -29,7 +29,7 @@ export default async function HospitalsPage() {
 
         <div className="relative grid gap-8 lg:grid-cols-12 lg:items-center">
           <div className="space-y-4 lg:col-span-8">
-            <span className="inline-flex items-center gap-2.5 rounded-full border border-[var(--cardiac-300)]/30 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-[var(--cardiac-100)] backdrop-blur-md">
+            <span className="inline-flex items-center gap-2.5 rounded-full border border-[var(--cardiac-300)]/30 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-[var(--cardiac-100)]">
               <Hospital className="h-3.5 w-3.5 text-[var(--cardiac-300)]" />
               Accredited Clinical Directory
             </span>
@@ -53,7 +53,7 @@ export default async function HospitalsPage() {
             </div>
           </div>
 
-          <div className="relative hidden h-40 overflow-hidden rounded-[1.5rem] border border-white/10 shadow-inner lg:col-span-4 lg:block">
+          <div className="relative hidden h-40 overflow-hidden rounded-md border border-white/10 lg:col-span-4 lg:block">
             <Image
               src="https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?auto=format&fit=crop&w=800&q=80"
               alt="Cardiac hospital emergency facility"

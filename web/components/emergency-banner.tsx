@@ -6,14 +6,11 @@ export function EmergencyBanner() {
   return (
     <div
       role="alert"
-      className="relative overflow-hidden rounded-[1.75rem] border border-red-700/40 bg-gradient-to-r from-red-600 via-[var(--cardiac-600)] to-red-700 px-5 py-5 text-white shadow-2xl shadow-red-700/30 sm:px-7"
+      className="relative overflow-hidden rounded-lg border border-red-700/40 bg-gradient-to-r from-red-600 via-[var(--cardiac-600)] to-red-700 px-5 py-5 text-white sm:px-7"
     >
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(255,255,255,0.18),transparent_60%)]" />
-      <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
-
       <div className="relative flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-white/20">
             <ShieldAlert aria-hidden className="h-6 w-6 animate-pulse text-white" />
           </span>
           <div>
@@ -32,7 +29,7 @@ export function EmergencyBanner() {
         <div className="flex items-center gap-2.5">
           <a
             href="tel:108"
-            className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-white px-5 py-2.5 font-bold text-red-700 shadow-lg transition-transform hover:scale-105 active:scale-95"
+            className="inline-flex min-h-[44px] items-center gap-2 rounded-full bg-white px-5 py-2.5 font-bold text-red-700 transition-transform hover:scale-105 active:scale-95"
           >
             <Phone aria-hidden className="h-4 w-4 animate-bounce text-red-600" />
             Call 108 (ambulance)

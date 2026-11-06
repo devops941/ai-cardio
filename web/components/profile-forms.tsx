@@ -253,7 +253,7 @@ export function ProfileForms({ initial }: { initial: ProfileInitial }) {
           </CardContent>
         </Card>
 
-        <div className="rounded-3xl border border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/50 p-5 text-xs text-[var(--ink-500)]">
+        <div className="rounded-md border border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/50 p-5 text-xs text-[var(--ink-500)]">
           <div className="flex items-center gap-2 font-bold text-[var(--cardiac-800)]">
             <ShieldCheck className="h-4 w-4 text-[var(--cardiac-600)]" />
             Data protection guarantee

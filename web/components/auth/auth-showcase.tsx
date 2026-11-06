@@ -67,7 +67,7 @@ export function AuthShowcase({
         {HIGHLIGHTS.map((item) => (
           <div
             key={item.title}
-            className="flex items-start gap-3.5 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-md transition-colors hover:bg-white/10"
+            className="flex items-start gap-3.5 rounded-md border border-white/10 bg-white/5 p-4 transition-colors hover:bg-white/10"
           >
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--cardiac-600)]/30 text-[var(--cardiac-100)]">
               <item.icon className="h-5 w-5" />
@@ -86,7 +86,7 @@ export function AuthShowcase({
             <Lock className="h-3.5 w-3.5" /> bcrypt + TLS encryption
           </span>
           <span className="flex items-center gap-1.5">
-            <HeartPulse className="h-3.5 w-3.5" /> 96.4% screening recall
+            <HeartPulse className="h-3.5 w-3.5" /> Evidence-based screening
           </span>
         </div>
       </div>

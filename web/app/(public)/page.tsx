@@ -45,7 +45,7 @@ const FEATURES = [
     icon: Brain,
     title: "Cleveland Machine Learning",
     body: "landing.feature2",
-    tag: "96.4% Recall",
+    tag: "Random Forest model",
     image:
       "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=80",
   },
@@ -60,7 +60,7 @@ const FEATURES = [
 ];
 
 const STATS = [
-  { value: 96.4, suffix: "%", decimals: 1, label: "Screening recall", sub: "Random Forest model" },
+  { value: 303, suffix: "", decimals: 0, label: "Cleveland dataset rows", sub: "UCI training cohort" },
   { value: 8, suffix: "", decimals: 0, label: "Red-flag rules", sub: "Deterministic triage" },
   { value: 13, suffix: "", decimals: 0, label: "Clinical markers", sub: "Cleveland cohort" },
   { value: 100, suffix: "%", decimals: 0, label: "Grounded citations", sub: "Every explanation" },
@@ -174,15 +174,15 @@ export default function LandingPage() {
               <Reveal delay={2}>
                 <div className="relative mx-auto max-w-md">
                   {/* Floating stat chips */}
-                  <div className="absolute -left-4 top-8 z-20 hidden animate-soft-float rounded-2xl border border-white/20 bg-white/95 p-3 shadow-2xl backdrop-blur-md sm:block">
+                  <div className="absolute -left-4 top-8 z-20 hidden animate-soft-float rounded-md border border-[var(--cardiac-100)] bg-white p-3 shadow-sm sm:block">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--ink-500)]">
-                      ML Confidence
+                      Screening model
                     </p>
-                    <p className="text-xl font-black text-[var(--cardiac-700)]">96.4%</p>
+                    <p className="text-xl font-black text-[var(--cardiac-700)]">Random Forest</p>
                   </div>
 
                   <div
-                    className="absolute -right-4 bottom-24 z-20 hidden animate-soft-float rounded-2xl border border-white/20 bg-white/95 p-3 shadow-2xl backdrop-blur-md sm:block"
+                    className="absolute -right-4 bottom-24 z-20 hidden animate-soft-float rounded-md border border-[var(--cardiac-100)] bg-white p-3 shadow-sm sm:block"
                     style={{ animationDelay: "1.2s" }}
                   >
                     <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--ink-500)]">
@@ -191,7 +191,7 @@ export default function LandingPage() {
                     <p className="text-xl font-black text-[var(--cardiac-700)]">&lt;30s</p>
                   </div>
 
-                  <div className="cardiac-ring relative overflow-hidden rounded-[2rem] border border-white/15 bg-[var(--cardiac-950)]/50 shadow-2xl backdrop-blur-md">
+                  <div className="cardiac-ring relative overflow-hidden rounded-lg border border-white/15 bg-[var(--cardiac-950)]/50 backdrop-blur-md">
                     <div className="relative h-72 w-full overflow-hidden">
                       <Image
                         src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=900&q=80"
@@ -211,7 +211,7 @@ export default function LandingPage() {
                     <div className="space-y-3 p-5">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2.5">
-                          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--cardiac-600)]/25 text-[var(--cardiac-200)]">
+                          <span className="flex h-9 w-9 items-center justify-center rounded-md bg-[var(--cardiac-600)]/25 text-[var(--cardiac-200)]">
                             <HeartPulse className="h-5 w-5 animate-pulse" />
                           </span>
                           <div>
@@ -228,7 +228,7 @@ export default function LandingPage() {
                         </span>
                       </div>
 
-                      <div className="space-y-2 rounded-2xl bg-white/5 p-3.5 backdrop-blur-sm">
+                      <div className="space-y-2 rounded-md bg-white/5 p-3.5">
                         {[
                           { label: "Symptom analysis", value: "Complete", tone: "text-emerald-300" },
                           { label: "Risk stratification", value: "Moderate", tone: "text-amber-300" },
@@ -307,11 +307,11 @@ export default function LandingPage() {
           <div className="mt-14 grid gap-6 lg:grid-cols-3">
             {STEPS.map((step, index) => (
               <Reveal key={step.title} delay={(index + 1) as 1 | 2 | 3}>
-                <div className="group relative h-full overflow-hidden rounded-3xl border border-[var(--cardiac-100)] bg-white p-7 shadow-[0_1px_2px_rgba(74,2,24,0.04),0_18px_40px_-24px_rgba(222,17,69,0.28)] transition-all duration-300 hover:-translate-y-1.5 hover:border-[var(--cardiac-300)]">
+                <div className="group relative h-full overflow-hidden rounded-md border border-[var(--cardiac-100)] bg-white p-7 shadow-sm transition-all duration-300 hover:border-[var(--cardiac-300)]">
                   <div className="absolute right-5 top-4 text-5xl font-black text-[var(--cardiac-100)] transition-colors group-hover:text-[var(--cardiac-200)]">
                     {step.badge}
                   </div>
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--cardiac-50)] to-[var(--cardiac-100)] text-[var(--cardiac-700)] transition-transform duration-300 group-hover:scale-110">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-md bg-gradient-to-br from-[var(--cardiac-50)] to-[var(--cardiac-100)] text-[var(--cardiac-700)] transition-transform duration-300 group-hover:scale-110">
                     <step.icon aria-hidden className="h-7 w-7" />
                   </div>
                   <h3 className="mt-6 text-xl font-bold text-[var(--ink-900)]">{t(step.title)}</h3>
@@ -346,7 +346,7 @@ export default function LandingPage() {
         <div className="mt-12 grid gap-7 lg:grid-cols-3">
           {FEATURES.map((feature, index) => (
             <Reveal key={feature.title} delay={(index + 1) as 1 | 2 | 3}>
-              <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-[var(--cardiac-100)] bg-white shadow-[0_1px_2px_rgba(74,2,24,0.04),0_18px_40px_-24px_rgba(222,17,69,0.28)] transition-all duration-300 hover:-translate-y-1.5 hover:border-[var(--cardiac-300)]">
+              <article className="group flex h-full flex-col overflow-hidden rounded-md border border-[var(--cardiac-100)] bg-white shadow-sm transition-all duration-300 hover:border-[var(--cardiac-300)]">
                 <div className="relative h-44 w-full overflow-hidden">
                   <Image
                     src={feature.image}
@@ -362,7 +362,7 @@ export default function LandingPage() {
                 </div>
 
                 <div className="flex flex-1 flex-col p-6">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--cardiac-50)] text-[var(--cardiac-700)]">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-md bg-[var(--cardiac-50)] text-[var(--cardiac-700)]">
                     <feature.icon aria-hidden className="h-6 w-6" />
                   </span>
                   <h3 className="mt-4 text-lg font-bold text-[var(--ink-900)]">{feature.title}</h3>
@@ -382,7 +382,7 @@ export default function LandingPage() {
       <section className="mx-auto w-full max-w-[1600px] px-4 py-20 sm:px-6 lg:px-10">
         <div className="grid items-center gap-12 lg:grid-cols-2">
           <Reveal>
-            <div className="relative overflow-hidden rounded-[2rem] border border-[var(--cardiac-100)] shadow-2xl">
+            <div className="relative overflow-hidden rounded-lg border border-[var(--cardiac-100)] shadow-sm">
               <Image
                 src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1200&q=80"
                 alt="Modern cardiac care hospital facility"
@@ -393,7 +393,7 @@ export default function LandingPage() {
               />
               <div className="absolute inset-0 bg-gradient-to-tr from-[var(--cardiac-950)]/80 via-transparent to-transparent" />
 
-              <div className="absolute bottom-5 left-5 right-5 rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-md">
+              <div className="absolute bottom-5 left-5 right-5 rounded-md border border-white/15 bg-white/10 p-4 backdrop-blur-md">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20">
@@ -469,7 +469,7 @@ export default function LandingPage() {
             <CardContent className="grid gap-8 p-8 lg:grid-cols-12 lg:p-10">
               <div className="lg:col-span-7">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--cardiac-50)] text-[var(--cardiac-700)]">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-md bg-[var(--cardiac-50)] text-[var(--cardiac-700)]">
                     <ShieldAlert className="h-5 w-5" />
                   </span>
                   <h2 className="text-xl font-bold text-[var(--ink-900)] sm:text-2xl">
@@ -490,7 +490,7 @@ export default function LandingPage() {
                   ].map((item) => (
                     <div
                       key={item.text}
-                      className="flex items-center gap-3 rounded-2xl border border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/50 p-3.5 text-xs font-medium text-[var(--ink-700)]"
+                      className="flex items-center gap-3 rounded-md border border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/50 p-3.5 text-xs font-medium text-[var(--ink-700)]"
                     >
                       <item.icon className="h-4 w-4 shrink-0 text-[var(--cardiac-500)]" />
                       {item.text}
@@ -506,7 +506,7 @@ export default function LandingPage() {
       {/* ================= FINAL CTA ================= */}
       <section className="mx-auto w-full max-w-[1600px] px-4 pb-24 sm:px-6 lg:px-10">
         <Reveal>
-          <div className="relative isolate overflow-hidden rounded-[2.5rem] cardiac-mesh px-6 py-16 text-center shadow-2xl sm:px-16">
+          <div className="relative isolate overflow-hidden rounded-lg cardiac-mesh px-6 py-16 text-center sm:px-16">
             <div className="absolute inset-0 -z-10 opacity-25">
               <Image
                 src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=1600&q=80"
@@ -517,7 +517,7 @@ export default function LandingPage() {
               />
             </div>
 
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-white/10 backdrop-blur-md">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-md bg-white/10">
               <Heart className="h-8 w-8 animate-heartbeat fill-white/30 text-white" />
             </div>
 

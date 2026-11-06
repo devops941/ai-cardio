@@ -21,7 +21,7 @@ export default async function HistoryPage() {
   return (
     <div className="mx-auto w-full max-w-[1600px] space-y-8 px-4 py-8 sm:px-6 lg:px-10 lg:py-12">
       {/* Page header */}
-      <div className="relative overflow-hidden rounded-[2rem] border border-[var(--cardiac-100)] bg-white p-6 shadow-[0_1px_2px_rgba(74,2,24,0.04),0_18px_40px_-24px_rgba(222,17,69,0.28)] sm:p-8">
+      <div className="relative overflow-hidden rounded-md border border-[var(--cardiac-100)] bg-white p-6 shadow-sm sm:p-8">
         <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-[var(--cardiac-100)]/50 blur-3xl" />
         <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -39,12 +39,12 @@ export default async function HistoryPage() {
           </div>
 
           <div className="flex gap-3">
-            <div className="flex items-center gap-2 rounded-2xl border border-[var(--cardiac-200)]/60 bg-[var(--cardiac-50)]/60 px-4 py-2.5 text-xs font-bold text-[var(--cardiac-700)]">
+            <div className="flex items-center gap-2 rounded-md border border-[var(--cardiac-200)]/60 bg-[var(--cardiac-50)]/60 px-4 py-2.5 text-xs font-bold text-[var(--cardiac-700)]">
               <Calendar className="h-4 w-4" />
               {rows.length} total
             </div>
             {emergencyCount > 0 ? (
-              <div className="flex items-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-2.5 text-xs font-bold text-red-700">
+              <div className="flex items-center gap-2 rounded-md border border-red-200 bg-red-50 px-4 py-2.5 text-xs font-bold text-red-700">
                 <ShieldAlert className="h-4 w-4" />
                 {emergencyCount} emergency
               </div>

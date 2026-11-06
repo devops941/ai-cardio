@@ -49,7 +49,7 @@ export function HospitalCard({ hospital, rank }: { hospital: HospitalCardData; r
       <CardContent className="space-y-4 p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3.5">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--cardiac-500)] to-[var(--cardiac-800)] text-sm font-black text-white shadow-md shadow-[color:rgba(222,17,69,0.3)]">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-[var(--cardiac-500)] to-[var(--cardiac-800)] text-sm font-black text-white">
               {rank}
             </span>
             <div>
@@ -125,7 +125,7 @@ export function HospitalCard({ hospital, rank }: { hospital: HospitalCardData; r
         </div>
 
         {open ? (
-          <ul className="space-y-2 rounded-2xl border border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/50 p-3.5 text-xs text-[var(--ink-700)]">
+          <ul className="space-y-2 rounded-md border border-[var(--cardiac-100)] bg-[var(--cardiac-50)]/50 p-3.5 text-xs text-[var(--ink-700)]">
             {hospital.doctors.map((doctor) => (
               <li key={doctor.id} className="flex items-center gap-2">
                 <Stethoscope className="h-3.5 w-3.5 shrink-0 text-[var(--cardiac-500)]" />

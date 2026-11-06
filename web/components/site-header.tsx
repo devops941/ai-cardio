@@ -52,8 +52,8 @@ export function SiteHeader() {
       className={cn(
         "sticky top-0 z-50 w-full transition-all duration-300",
         scrolled
-          ? "border-b border-[var(--cardiac-100)] bg-white/85 shadow-[0_8px_30px_-16px_rgba(222,17,69,0.35)] backdrop-blur-xl"
-          : "border-b border-transparent bg-white/60 backdrop-blur-md",
+          ? "border-b border-[var(--cardiac-100)] bg-white/85 shadow-sm backdrop-blur-sm"
+          : "border-b border-transparent bg-white/60 backdrop-blur-sm",
       )}
     >
       {/* ECG pulse strip */}
@@ -65,8 +65,8 @@ export function SiteHeader() {
           href={session?.user ? "/dashboard" : "/"}
           className="group flex shrink-0 items-center gap-3 transition-transform active:scale-95"
         >
-          <span className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--cardiac-500)] to-[var(--cardiac-800)] shadow-lg shadow-[color:rgba(222,17,69,0.35)] transition-transform duration-300 group-hover:scale-105">
-            <span className="absolute inset-0 rounded-2xl bg-[var(--cardiac-400)]/40 animate-ring-ping" />
+          <span className="relative flex h-11 w-11 items-center justify-center rounded-md bg-gradient-to-br from-[var(--cardiac-500)] to-[var(--cardiac-800)] transition-transform duration-300 group-hover:scale-105">
+            <span className="absolute inset-0 rounded-md bg-[var(--cardiac-400)]/40 animate-ring-ping" />
             <Heart
               aria-hidden
               className="relative h-5 w-5 animate-heartbeat fill-white/25 text-white"
@@ -160,7 +160,7 @@ export function SiteHeader() {
           type="button"
           aria-label={t("a11y.toggleNav")}
           aria-expanded={open}
-          className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[var(--cardiac-200)] bg-[var(--cardiac-50)]/70 text-[var(--ink-700)] transition-colors hover:bg-[var(--cardiac-100)] lg:hidden"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-[var(--cardiac-200)] bg-[var(--cardiac-50)]/70 text-[var(--ink-700)] transition-colors hover:bg-[var(--cardiac-100)] lg:hidden"
           onClick={() => setOpen((v) => !v)}
         >
           {open ? (
@@ -180,13 +180,15 @@ export function SiteHeader() {
       >
         <nav aria-label={t("a11y.mobileNav")} className="space-y-1 px-4 py-4 sm:px-6">
           {links.map((link) => {
-            const active = pathname === link.href;
+            const active =
+              pathname === link.href ||
+              (link.href !== "/dashboard" && pathname.startsWith(`${link.href}/`));
             return (
               <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "flex items-center justify-between rounded-2xl px-4 py-3 text-sm font-semibold transition-colors",
+                  "flex items-center justify-between rounded-md px-4 py-3 text-sm font-semibold transition-colors",
                   active
                     ? "bg-[var(--cardiac-50)] text-[var(--cardiac-700)]"
                     : "text-[var(--ink-700)] hover:bg-[var(--cardiac-50)]/60",
@@ -204,7 +206,7 @@ export function SiteHeader() {
           <div className="mt-3 space-y-2 border-t border-[var(--cardiac-100)] pt-4">
             <a
               href="tel:108"
-              className="flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-red-600 to-[var(--cardiac-700)] px-4 py-3 text-sm font-bold text-white shadow-lg shadow-red-600/25"
+              className="flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-red-600 to-[var(--cardiac-700)] px-4 py-3 text-sm font-bold text-white"
             >
               <PhoneCall className="h-4 w-4" />
               Emergency Ambulance — Call 108
@@ -228,7 +230,7 @@ export function SiteHeader() {
                 </Link>
                 <Link
                   href="/register"
-                  className="rounded-full bg-gradient-to-r from-[var(--cardiac-600)] to-[var(--cardiac-800)] px-4 py-3 text-center text-sm font-semibold text-white shadow-lg shadow-[color:rgba(222,17,69,0.3)]"
+                  className="rounded-full bg-gradient-to-r from-[var(--cardiac-600)] to-[var(--cardiac-800)] px-4 py-3 text-center text-sm font-semibold text-white"
                 >
                   {t("nav.register")}
                 </Link>
@@ -236,7 +238,7 @@ export function SiteHeader() {
             )}
           </div>
 
-          <div className="flex items-center gap-2 rounded-2xl bg-emerald-50 p-3 text-[11px] font-semibold text-emerald-800">
+          <div className="flex items-center gap-2 rounded-md bg-emerald-50 p-3 text-[11px] font-semibold text-emerald-800">
             <ShieldCheck className="h-4 w-4 text-emerald-600" />
             Evidence-grounded · Non-diagnostic screening aid
           </div>

@@ -16,8 +16,7 @@ export default async function ProfilePage() {
 
   return (
     <div className="mx-auto w-full max-w-[1600px] space-y-8 px-4 py-8 sm:px-6 lg:px-10 lg:py-12">
-      <div className="relative overflow-hidden rounded-[2rem] border border-[var(--cardiac-100)] bg-white p-6 shadow-[0_1px_2px_rgba(74,2,24,0.04),0_18px_40px_-24px_rgba(222,17,69,0.28)] sm:p-8">
-        <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-[var(--cardiac-100)]/50 blur-3xl" />
+      <div className="relative overflow-hidden rounded-lg border border-[var(--cardiac-100)] bg-white p-6 shadow-sm sm:p-8">
         <div className="relative">
           <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-[var(--cardiac-600)]">
             <UserCheck className="h-4 w-4" />

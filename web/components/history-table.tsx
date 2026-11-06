@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { AlertCircle, ExternalLink, Heart, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 import { RiskBadge } from "@/components/risk-badge";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { ConfirmDeleteDialog } from "@/components/ui/confirm-delete-dialog";
 import { apiFetch } from "@/lib/api";
 import { t } from "@/lib/i18n";
 
@@ -21,21 +23,31 @@ export interface HistoryRow {
 export function HistoryTable({ initialRows }: { initialRows: HistoryRow[] }) {
   const [rows, setRows] = useState(initialRows);
   const [error, setError] = useState<string | null>(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
-  async function remove(id: string) {
-    if (!window.confirm(t("result.confirmDelete"))) return;
+  async function handleConfirmDelete() {
+    if (!pendingDeleteId) return;
+    const id = pendingDeleteId;
+    setPendingDeleteId(null);
     try {
       await apiFetch(`/api/predictions/${id}`, { method: "DELETE" });
       setRows((prev) => prev.filter((row) => row.id !== id));
+      toast.success("Assessment deleted successfully.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("errors.generic"));
+      const message = err instanceof Error ? err.message : t("errors.generic");
+      setError(message);
+      toast.error(message);
     }
+  }
+
+  function requestDelete(id: string) {
+    setPendingDeleteId(id);
   }
 
   if (rows.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-[var(--cardiac-200)] bg-[var(--cardiac-50)]/40 p-14 text-center">
-        <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-[var(--cardiac-100)] text-[var(--cardiac-600)]">
+      <div className="flex flex-col items-center justify-center rounded-md border border-dashed border-[var(--cardiac-200)] bg-[var(--cardiac-50)]/40 p-14 text-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--cardiac-100)] text-[var(--cardiac-600)]">
           <Heart className="h-8 w-8 animate-heartbeat" />
         </div>
         <h3 className="mt-4 text-lg font-bold text-[var(--ink-900)]">
@@ -53,9 +65,17 @@ export function HistoryTable({ initialRows }: { initialRows: HistoryRow[] }) {
 
   return (
     <div className="space-y-3">
+      <ConfirmDeleteDialog
+        open={pendingDeleteId !== null}
+        onOpenChange={(open) => { if (!open) setPendingDeleteId(null); }}
+        title={t("result.delete")}
+        description={t("result.confirmDelete")}
+        onConfirm={handleConfirmDelete}
+      />
+
       {error ? <Alert tone="error">{error}</Alert> : null}
 
-      <div className="overflow-hidden rounded-3xl border border-[var(--cardiac-100)] bg-white shadow-[0_1px_2px_rgba(74,2,24,0.04),0_18px_40px_-24px_rgba(222,17,69,0.28)]">
+      <div className="overflow-hidden rounded-md border border-[var(--cardiac-100)] bg-white shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <caption className="sr-only">{t("history.title")}</caption>
@@ -109,7 +129,7 @@ export function HistoryTable({ initialRows }: { initialRows: HistoryRow[] }) {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => remove(row.id)}
+                        onClick={() => requestDelete(row.id)}
                         className="h-8 w-8 p-0 text-[var(--ink-300)] hover:bg-[var(--cardiac-50)] hover:text-[var(--cardiac-600)]"
                         title={t("result.delete")}
                       >

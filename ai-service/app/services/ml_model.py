@@ -56,7 +56,7 @@ NUMERIC = ["age", "trestbps", "chol", "thalach", "oldpeak", "ca"]
 CATEGORICAL = ["cp", "restecg", "slope", "thal"]
 BINARY = ["sex", "fbs", "exang"]
 
-_active: dict | None = None
+_active_models: dict[int, dict] = {}  # maps version -> loaded joblib dict
 
 
 def _models_dir() -> Path:
@@ -320,48 +320,112 @@ def list_versions() -> dict:
         except Exception:  # noqa: BLE001
             continue
     versions.sort(key=lambda v: v.get("version", 0))
-    return {"versions": versions, "active_version": active_version()}
+    av = active_versions()
+    primary = max(av) if av else None
+    return {"versions": versions, "active_version": primary, "active_versions": av}
+
+
+def active_versions() -> list[int]:
+    """Return a sorted list of all currently active version numbers.
+
+    Supports both the new format {"versions": [1, 3]} and the legacy
+    format {"version": N}.  Returns [] if the file is missing or invalid.
+    """
+    active_file = _models_dir() / "active.json"
+    if not active_file.exists():
+        return []
+    try:
+        data = json.loads(active_file.read_text())
+        if "versions" in data:
+            raw = data["versions"]
+            if isinstance(raw, list):
+                return sorted(int(v) for v in raw)
+        if "version" in data:
+            return [int(data["version"])]
+    except Exception:  # noqa: BLE001
+        pass
+    return []
 
 
 def active_version() -> int | None:
-    active_file = _models_dir() / "active.json"
-    if not active_file.exists():
-        return None
-    try:
-        return int(json.loads(active_file.read_text())["version"])
-    except Exception:  # noqa: BLE001
-        return None
+    """Return the primary (highest) active version, or None.
+
+    Kept for backward compatibility with train_initial.py.
+    """
+    av = active_versions()
+    return max(av) if av else None
+
+
+def _write_active(versions: list[int]) -> None:
+    """Write the new-format active.json with a sorted, deduplicated list."""
+    payload = {"versions": sorted(set(versions))}
+    (_models_dir() / "active.json").write_text(json.dumps(payload))
 
 
 def activate(version: int) -> int:
-    global _active
+    global _active_models
     model_path = _models_dir() / f"rf_v{version}.joblib"
     if not model_path.exists():
         raise AppError(
             "MODEL_VERSION_NOT_FOUND", f"Model version {version} was not found.", 404
         )
-    _active = joblib.load(model_path)
-    (_models_dir() / "active.json").write_text(json.dumps({"version": version}))
+    _active_models[version] = joblib.load(model_path)
+    current = active_versions()
+    if version not in current:
+        current.append(version)
+    _write_active(current)
     logger.info("Activated model version %s", version)
-    return version
+    return max(current)  # return primary
+
+
+def deactivate(version: int) -> int | None:
+    """Deactivate a model version.
+
+    Returns the new primary (highest remaining active version), or None if
+    none remain (which only happens when the guard below is bypassed).
+    Raises AppError(LAST_ACTIVE_MODEL, 409) if *version* is the sole active model.
+    If *version* is not currently active this is a no-op.
+    """
+    global _active_models
+    current = active_versions()
+    if version not in current:
+        # No-op — version not active; return existing primary
+        return max(current) if current else None
+    if len(current) == 1 and current[0] == version:
+        raise AppError(
+            "LAST_ACTIVE_MODEL",
+            "At least one model must remain active.",
+            409,
+        )
+    current.remove(version)
+    _active_models.pop(version, None)
+    _write_active(current)
+    logger.info("Deactivated model version %s", version)
+    return max(current) if current else None
 
 
 def load_active() -> None:
-    global _active
-    version = active_version()
-    if version is None:
+    global _active_models
+    versions = active_versions()
+    if not versions:
+        # Fall back to the newest available model
         files = []
         for path in _models_dir().glob("rf_v*.joblib"):
             try:
                 files.append(int(path.stem.split("_v")[1]))
             except (IndexError, ValueError):
                 continue
-        version = max(files, default=None)
-    if version is not None:
-        path = _models_dir() / f"rf_v{version}.joblib"
+        fallback = max(files, default=None)
+        if fallback is not None:
+            versions = [fallback]
+            _write_active(versions)
+    for v in versions:
+        path = _models_dir() / f"rf_v{v}.joblib"
         if path.exists():
-            _active = joblib.load(path)
-            logger.info("Loaded model version %s at startup", version)
+            _active_models[v] = joblib.load(path)
+            logger.info("Loaded model version %s at startup", v)
+        else:
+            logger.warning("Active model file missing for version %s, skipping", v)
 
 
 def band_from_probability(proba: float) -> str:
@@ -374,14 +438,19 @@ def band_from_probability(proba: float) -> str:
 
 
 def predict(features: dict) -> dict:
-    if _active is None:
+    if not _active_models:
         raise AppError("NO_ACTIVE_MODEL", "No active model is available.", 503)
-    pipeline = _active["pipeline"]
     row = pd.DataFrame([{f: float(features[f]) for f in FEATURES}])
-    proba = float(pipeline.predict_proba(row)[:, 1][0])
-    risk = band_from_probability(proba)
+    probas: list[float] = []
+    for model_dict in _active_models.values():
+        p = float(model_dict["pipeline"].predict_proba(row)[:, 1][0])
+        probas.append(p)
+    mean_proba = round(float(np.mean(probas)), 4)
+    risk = band_from_probability(mean_proba)
+    sorted_versions = sorted(_active_models.keys())
     return {
-        "probability": round(proba, 4),
+        "probability": mean_proba,
         "risk_level": risk,
-        "model_version": int(_active["version"]),
+        "model_version": max(sorted_versions),  # primary = highest active
+        "model_versions": sorted_versions,
     }

@@ -133,12 +133,12 @@ export function HospitalSection({
       {error ? <Alert tone="error">{error}</Alert> : null}
       {currentMeta.radiusExpanded ? (
         <Alert tone="warning">
-          {t("fields.widerArea").replace("{radius}", String(currentMeta.radiusKm))}
+          {t("fields.widerArea", { radius: currentMeta.radiusKm })}
         </Alert>
       ) : null}
 
       {center && withCoords.length > 0 ? (
-        <div className="overflow-hidden rounded-3xl border border-[var(--cardiac-100)] shadow-md">
+        <div className="overflow-hidden rounded-md border border-[var(--cardiac-100)] shadow-sm">
           <HospitalMapDynamic
             center={center}
             showUser={currentMeta.mode === "geo"}
@@ -154,7 +154,7 @@ export function HospitalSection({
       ) : null}
 
       {hospitals.length === 0 ? (
-        <div className="rounded-3xl border border-dashed border-[var(--cardiac-200)] bg-[var(--cardiac-50)]/40 p-8 text-center">
+        <div className="rounded-md border border-dashed border-[var(--cardiac-200)] bg-[var(--cardiac-50)]/40 p-8 text-center">
           <Building2 className="mx-auto h-8 w-8 text-[var(--cardiac-400)]" />
           <p className="mt-2 text-xs text-[var(--ink-500)]">{t("hospitals.noResults")}</p>
         </div>
