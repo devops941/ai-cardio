@@ -320,10 +320,10 @@ export function ReportView({ record, hospitalResult }: ReportViewProps) {
                 {ui.diagnosticName}
               </h1>
               <p className="mt-1.5 text-xs text-[var(--ink-500)]">
-                {ui.assessmentId}:{" "}
+                {/* {ui.assessmentId}:{" "}
                 <span className="font-mono font-semibold text-[var(--ink-700)]">
                   {record.id.slice(-8)}
-                </span>{" "}
+                </span>{" "} */}
                 · {ui.evaluatedOn}{" "}
                 {new Date(record.createdAt).toLocaleString(
                   lang === "ta" ? "ta-IN" : lang === "hi" ? "hi-IN" : undefined,
