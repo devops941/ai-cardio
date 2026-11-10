@@ -19,7 +19,7 @@ import { t } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 const USER_LINKS = [
-  { href: "/dashboard", key: "nav.dashboard" },
+  // { href: "/dashboard", key: "nav.dashboard" },
   { href: "/check", key: "nav.check" },
   { href: "/hospitals", key: "nav.hospitals" },
   { href: "/history", key: "nav.history" },
@@ -62,7 +62,7 @@ export function SiteHeader() {
       <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-10">
         {/* Brand */}
         <Link
-          href={session?.user ? "/dashboard" : "/"}
+          href={session?.user ? "/" : "/"}
           className="group flex shrink-0 items-center gap-3 transition-transform active:scale-95"
         >
           <span className="relative flex h-11 w-11 items-center justify-center rounded-md bg-gradient-to-br from-[var(--cardiac-500)] to-[var(--cardiac-800)] transition-transform duration-300 group-hover:scale-105">
@@ -87,7 +87,7 @@ export function SiteHeader() {
           {links.map((link) => {
             const active =
               pathname === link.href ||
-              (link.href !== "/dashboard" && pathname.startsWith(`${link.href}/`));
+              (link.href !== "/" && pathname.startsWith(`${link.href}/`));
             return (
               <Link
                 key={link.href}
@@ -182,7 +182,7 @@ export function SiteHeader() {
           {links.map((link) => {
             const active =
               pathname === link.href ||
-              (link.href !== "/dashboard" && pathname.startsWith(`${link.href}/`));
+              (link.href !== "/" && pathname.startsWith(`${link.href}/`));
             return (
               <Link
                 key={link.href}

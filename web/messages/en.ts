@@ -10,7 +10,7 @@ export const messages = {
   emergencyBanner: "Call 108 (ambulance) / 112 now",
   callAmbulance: "Call 108",
   nav: {
-    dashboard: "Dashboard",
+    // dashboard: "Dashboard",
     check: "Check symptoms",
     hospitals: "Hospitals",
     history: "History",

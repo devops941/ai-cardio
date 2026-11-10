@@ -42,7 +42,7 @@ function LoginForm() {
       return;
     }
     const session = await fetch("/api/auth/session").then((r) => r.json());
-    router.push(session?.user?.role === "ADMIN" ? "/admin" : "/dashboard");
+    router.push(session?.user?.role === "ADMIN" ? "/admin" : "/");
     router.refresh();
   }
 
